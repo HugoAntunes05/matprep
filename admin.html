@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MatPrep · Backoffice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b1220; --panel:#121c2e; --line:#2a3a52; --text:#e8eef7; --muted:#8b9bb4;
+  --teal:#2dd4bf; --teal2:#0d9488; --blue:#38bdf8; --rose:#fb7185; --amber:#fbbf24; --ok:#4ade80;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:radial-gradient(circle at 10% -10%,rgba(45,212,191,.14),transparent 28%),radial-gradient(circle at 90% 0,rgba(56,189,248,.1),transparent 26%),var(--bg);color:var(--text);font-family:Sora,sans-serif}
+button,input{font-family:inherit}
+a{color:var(--blue);text-decoration:none}
+.wrap{max-width:1280px;margin:0 auto;padding:28px 20px 60px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:22px}
+.brand{font-weight:800;font-size:22px;letter-spacing:-.02em}
+.brand span{color:var(--teal)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px}
+.grid{display:grid;gap:12px}
+.g4{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
+.g2{grid-template-columns:minmax(280px,340px) 1fr}
+@media(max-width:900px){.g2{grid-template-columns:1fr}}
+.stat .k{font-size:12px;color:var(--muted);font-weight:600}
+.stat .v{font-size:24px;font-weight:800;margin-top:4px;color:var(--teal)}
+.btn{border:0;border-radius:11px;padding:11px 16px;font-weight:700;cursor:pointer;background:linear-gradient(135deg,var(--teal),var(--teal2));color:#042f2e}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
+.btn:disabled{opacity:.5;cursor:default}
+input[type=password],input[type=search],select{
+  width:100%;background:#182338;border:1px solid var(--line);border-radius:11px;padding:12px 14px;color:var(--text);outline:none
+}
+input:focus,select:focus{border-color:var(--teal)}
+.login{max-width:420px;margin:12vh auto;padding:28px}
+.login h1{margin:0 0 8px;font-size:24px}
+.login p{margin:0 0 18px;color:var(--muted);font-size:14px;line-height:1.5}
+.err{color:var(--rose);font-size:13px;margin-top:10px}
+.hidden{display:none!important}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th,td{padding:11px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{color:var(--muted);font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+tr.row{cursor:pointer}
+tr.row:hover td{background:rgba(45,212,191,.06)}
+tr.active td{background:rgba(45,212,191,.12)}
+.pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:3px 10px;font-size:11.5px;font-weight:700;border:1px solid rgba(45,212,191,.3);color:var(--teal);background:rgba(45,212,191,.1)}
+.muted{color:var(--muted)}
+.tiny{font-size:12px;color:var(--muted)}
+.h2{margin:0 0 12px;font-size:16px;font-weight:800}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0}
+.tab{border:1px solid var(--line);background:#182338;color:var(--muted);border-radius:999px;padding:7px 13px;font-size:12.5px;font-weight:700;cursor:pointer}
+.tab.on{border-color:var(--teal);color:var(--teal);background:rgba(45,212,191,.12)}
+.timeline{display:flex;flex-direction:column;gap:8px;max-height:520px;overflow:auto}
+.ev{background:#182338;border:1px solid var(--line);border-radius:12px;padding:11px 13px}
+.ev .t{font-weight:700;font-size:13px}
+.ev .m{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.45}
+.bar{height:7px;background:#2a3a52;border-radius:99px;overflow:hidden;margin-top:6px}
+.bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--teal),var(--blue))}
+.empty{padding:28px;text-align:center;color:var(--muted)}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.toolbar input{max-width:260px}
+.badge-ok{color:var(--ok)} .badge-bad{color:var(--rose)} .badge-warn{color:var(--amber)}
+</style>
+</head>
+<body>
+<div id="loginView" class="login card">
+  <div class="brand">Mat<span>Prep</span> Backoffice</div>
+  <h1>Área de administração</h1>
+  <p>Vê o que cada aluno leu, minutos de vídeo, perguntas vistas/respondidas, materiais e exames.</p>
+  <form id="loginForm">
+    <label class="tiny" for="pwd">Password de admin</label>
+    <input id="pwd" type="password" autocomplete="current-password" placeholder="ADMIN_PASSWORD" required>
+    <button class="btn" style="width:100%;margin-top:14px" type="submit">Entrar</button>
+    <div id="loginErr" class="err hidden"></div>
+  </form>
+  <p class="tiny" style="margin-top:16px">Define <code>ADMIN_PASSWORD</code> e <code>SUPABASE_SERVICE_ROLE_KEY</code> no servidor.</p>
+</div>
+
+<div id="appView" class="wrap hidden">
+  <div class="top">
+    <div>
+      <div class="brand">Mat<span>Prep</span> Backoffice</div>
+      <div class="tiny">Monitorização completa da atividade dos alunos</div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <a class="btn ghost" href="/" target="_blank">Abrir plataforma</a>
+      <button class="btn ghost" id="btnRefresh" type="button">Atualizar</button>
+      <button class="btn ghost" id="btnLogout" type="button">Sair</button>
+    </div>
+  </div>
+
+  <div id="overview" class="grid g4" style="margin-bottom:16px"></div>
+
+  <div class="grid g2">
+    <div class="card">
+      <div class="h2">Alunos</div>
+      <div class="toolbar">
+        <input id="searchAluno" type="search" placeholder="Pesquisar nome / id…">
+      </div>
+      <div style="max-height:640px;overflow:auto">
+        <table>
+          <thead>
+            <tr><th>Aluno</th><th>Estudo</th><th>Vídeo</th><th>%</th></tr>
+          </thead>
+          <tbody id="alunosBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card" id="detailCard">
+      <div class="empty" id="detailEmpty">Seleciona um aluno à esquerda para ver o detalhe completo.</div>
+      <div id="detail" class="hidden">
+        <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:flex-start">
+          <div>
+            <div class="h2" id="dNome" style="margin:0">—</div>
+            <div class="tiny" id="dMeta"></div>
+          </div>
+          <div class="pill" id="dStreak">Streak —</div>
+        </div>
+        <div class="grid g4" id="dStats" style="margin-top:14px"></div>
+        <div class="tabs" id="tabs">
+          <button class="tab on" data-tab="timeline" type="button">Linha temporal</button>
+          <button class="tab" data-tab="licoes" type="button">Lições lidas</button>
+          <button class="tab" data-tab="videos" type="button">Vídeos</button>
+          <button class="tab" data-tab="perguntas" type="button">Perguntas</button>
+          <button class="tab" data-tab="progresso" type="button">Progresso bruto</button>
+        </div>
+        <div id="pane-timeline"></div>
+        <div id="pane-licoes" class="hidden"></div>
+        <div id="pane-videos" class="hidden"></div>
+        <div id="pane-perguntas" class="hidden"></div>
+        <div id="pane-progresso" class="hidden"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const TOKEN_KEY = 'matprep_admin_token';
+let token = localStorage.getItem(TOKEN_KEY) || '';
+let alunos = [];
+let selectedId = null;
+let detailCache = null;
+
+const $ = (id) => document.getElementById(id);
+
+function fmtMin(sec) {
+  const s = Number(sec) || 0;
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  if (m >= 60) return `${Math.floor(m/60)}h ${m%60}m`;
+  return `${m}m ${r}s`;
+}
+function fmtDate(v) {
+  if (!v) return '—';
+  try {
+    return new Date(v).toLocaleString('pt-PT', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+  } catch { return String(v); }
+}
+function shortId(id) {
+  return id ? String(id).slice(0, 8) + '…' : '—';
+}
+function tipoLabel(t) {
+  const map = {
+    sessao_inicio: 'Sessão iniciada',
+    view: 'Navegação',
+    licao_aberta: 'Abriu lição',
+    licao_tempo: 'Tempo na lição',
+    licao_concluida: 'Concluiu lição',
+    video_play: 'Play no vídeo',
+    video_tick: 'A ver vídeo',
+    video_pause: 'Pausa no vídeo',
+    video_youtube: 'Abriu no YouTube',
+    pergunta_vista: 'Viu pergunta',
+    pergunta_respondida: 'Respondeu pergunta',
+    material_aberto: 'Abriu material',
+    aprender_tema: 'Aprender · tema',
+    exame_inicio: 'Iniciou exame',
+    exame_fim: 'Terminou exame',
+    marca_rever: 'Marcou para rever',
+  };
+  return map[t] || t;
+}
+
+async function api(path, opts = {}) {
+  const headers = Object.assign({ 'Content-Type': 'application/json' }, opts.headers || {});
+  if (token) headers.Authorization = 'Bearer ' + token;
+  const res = await fetch(path, Object.assign({}, opts, { headers }));
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || ('Erro ' + res.status));
+  return data;
+}
+
+function showApp(on) {
+  $('loginView').classList.toggle('hidden', on);
+  $('appView').classList.toggle('hidden', !on);
+}
+
+function statCard(k, v) {
+  return `<div class="card stat"><div class="k">${k}</div><div class="v">${v}</div></div>`;
+}
+
+async function loadOverview() {
+  const o = await api('/api/admin/overview');
+  $('overview').innerHTML = [
+    statCard('Alunos', o.totalAlunos),
+    statCard('Ativos (24h)', o.ativosHoje),
+    statCard('Perguntas vistas', o.perguntasVistas),
+    statCard('Respondidas', o.perguntasRespondidas),
+    statCard('Min. vídeo', o.minutosVideo),
+    statCard('Min. estudo', o.minutosEstudo),
+    statCard('Lições concluídas', o.licoesConcluidas),
+    statCard('Eventos', o.totalEventos),
+  ].join('');
+}
+
+function renderAlunos(filter = '') {
+  const q = filter.trim().toLowerCase();
+  const rows = alunos.filter(a => {
+    if (!q) return true;
+    return (a.nome || '').toLowerCase().includes(q) || (a.user_id || '').toLowerCase().includes(q);
+  });
+  $('alunosBody').innerHTML = rows.map(a => {
+    const active = a.user_id === selectedId ? ' active' : '';
+    return `<tr class="row${active}" data-id="${a.user_id}">
+      <td><div style="font-weight:700">${a.nome || 'Estudante'}</div>
+      <div class="tiny">${shortId(a.user_id)} · ${fmtDate(a.ultimo_acesso)}</div></td>
+      <td>${fmtMin(a.segundos_estudo)}</td>
+      <td>${fmtMin(a.segundos_video)}</td>
+      <td>${a.precisao_pct ?? 0}%</td>
+    </tr>`;
+  }).join('') || `<tr><td colspan="4" class="empty">Sem alunos ainda. Usa a plataforma para gerar atividade.</td></tr>`;
+}
+
+async function loadAlunos() {
+  const data = await api('/api/admin/alunos');
+  alunos = data.alunos || [];
+  renderAlunos($('searchAluno').value);
+}
+
+async function selectAluno(id) {
+  selectedId = id;
+  renderAlunos($('searchAluno').value);
+  $('detailEmpty').classList.add('hidden');
+  $('detail').classList.remove('hidden');
+  $('detail').innerHTML = '<div class="empty">A carregar…</div>';
+  // rebuild detail structure after loading — easier to reset HTML
+  const htmlShell = `
+    <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:flex-start">
+      <div>
+        <div class="h2" id="dNome" style="margin:0">—</div>
+        <div class="tiny" id="dMeta"></div>
+      </div>
+      <div class="pill" id="dStreak">Streak —</div>
+    </div>
+    <div class="grid g4" id="dStats" style="margin-top:14px"></div>
+    <div class="tabs" id="tabs">
+      <button class="tab on" data-tab="timeline" type="button">Linha temporal</button>
+      <button class="tab" data-tab="licoes" type="button">Lições lidas</button>
+      <button class="tab" data-tab="videos" type="button">Vídeos</button>
+      <button class="tab" data-tab="perguntas" type="button">Perguntas</button>
+      <button class="tab" data-tab="progresso" type="button">Progresso bruto</button>
+    </div>
+    <div id="pane-timeline"></div>
+    <div id="pane-licoes" class="hidden"></div>
+    <div id="pane-videos" class="hidden"></div>
+    <div id="pane-perguntas" class="hidden"></div>
+    <div id="pane-progresso" class="hidden"></div>`;
+  $('detail').innerHTML = htmlShell;
+  wireTabs();
+
+  const d = await api('/api/admin/alunos/' + id);
+  detailCache = d;
+  const a = d.aluno || {};
+  $('dNome').textContent = a.nome || 'Estudante';
+  $('dMeta').textContent = `ID ${shortId(a.user_id)} · Registado ${fmtDate(a.registado_em)} · Último acesso ${fmtDate(a.ultimo_acesso)}`;
+  $('dStreak').textContent = `Streak ${a.streak || 1} dia(s)`;
+  $('dStats').innerHTML = [
+    statCard('Vistas', a.perguntas_vistas || 0),
+    statCard('Respondidas', a.perguntas_respondidas || 0),
+    statCard('Certas', a.perguntas_certas || 0),
+    statCard('Precisão', (a.precisao_pct || 0) + '%'),
+    statCard('Vídeo', fmtMin(a.segundos_video)),
+    statCard('Estudo', fmtMin(a.segundos_estudo)),
+    statCard('Lições OK', a.licoes_concluidas || 0),
+    statCard('Materiais', a.materiais_abertos || 0),
+    statCard('Exames', a.exames_feitos || 0),
+  ].join('');
+
+  // timeline
+  $('pane-timeline').innerHTML = `<div class="timeline">${(d.eventos || []).map(ev => `
+    <div class="ev">
+      <div class="t">${tipoLabel(ev.tipo)}</div>
+      <div class="m">${fmtDate(ev.created_at)}
+        ${ev.tema ? ' · tema ' + ev.tema : ''}
+        ${ev.licao ? ' · lição ' + ev.licao : ''}
+        ${ev.questao_id ? ' · Q ' + ev.questao_id : ''}
+        ${ev.video_id ? ' · vídeo ' + ev.video_id : ''}
+        ${ev.material_id ? ' · mat ' + ev.material_id : ''}
+        ${ev.segundos ? ' · +' + ev.segundos + 's' : ''}
+        ${ev.meta && Object.keys(ev.meta).length ? '<br>' + escapeHtml(JSON.stringify(ev.meta)) : ''}
+      </div>
+    </div>`).join('') || '<div class="empty">Sem eventos ainda.</div>'}</div>`;
+
+  // licoes
+  $('pane-licoes').innerHTML = `<table><thead><tr><th>Tema</th><th>Lição</th><th>Tempo</th><th>Estado</th><th>Última</th></tr></thead><tbody>
+    ${(d.licoes || []).map(l => `<tr>
+      <td>${l.tema}</td><td>${l.licao}</td><td>${fmtMin(l.segundos_lidos)}</td>
+      <td>${l.concluida ? '<span class="badge-ok">Concluída</span>' : '<span class="badge-warn">Em curso</span>'} · ${l.aberturas}x</td>
+      <td>${fmtDate(l.ultima_abertura)}</td>
+    </tr>`).join('') || '<tr><td colspan="5" class="empty">Nenhuma lição registada.</td></tr>'}
+  </tbody></table>`;
+
+  // videos
+  $('pane-videos').innerHTML = `<table><thead><tr><th>Vídeo</th><th>Contexto</th><th>Visto</th><th>%</th><th>Plays</th></tr></thead><tbody>
+    ${(d.videos || []).map(v => {
+      const pct = Math.min(100, v.percentual || 0);
+      return `<tr>
+        <td><div style="font-weight:700">${escapeHtml(v.titulo || v.video_id)}</div>
+        <div class="tiny">${escapeHtml(v.canal || '')} · ${v.video_id}</div>
+        <div class="bar"><i style="width:${pct}%"></i></div></td>
+        <td>${v.contexto}${v.tema ? ' / ' + v.tema : ''}${v.material_id ? ' / ' + v.material_id : ''}</td>
+        <td>${fmtMin(v.segundos_vistos)}</td>
+        <td>${pct}%</td>
+        <td>${v.plays || 0}</td>
+      </tr>`;
+    }).join('') || '<tr><td colspan="5" class="empty">Nenhum vídeo visto.</td></tr>'}
+  </tbody></table>`;
+
+  // perguntas
+  $('pane-perguntas').innerHTML = `<table><thead><tr><th>ID</th><th>Tema</th><th>Modo</th><th>Vistas</th><th>Resp.</th><th>Certas/Erradas</th><th>Tempo</th></tr></thead><tbody>
+    ${(d.perguntas || []).map(p => `<tr>
+      <td>${p.questao_id}</td><td>${p.tema || '—'}</td><td>${p.modo || '—'}</td>
+      <td>${p.vistas}</td><td>${p.respondidas}</td>
+      <td><span class="badge-ok">${p.certas}</span> / <span class="badge-bad">${p.erradas}</span></td>
+      <td>${fmtMin(p.segundos_total)}</td>
+    </tr>`).join('') || '<tr><td colspan="7" class="empty">Nenhuma pergunta vista.</td></tr>'}
+  </tbody></table>`;
+
+  // progresso bruto
+  const pr = d.progresso || {};
+  const licoesJson = pr.licoes || a.licoes_json || {};
+  $('pane-progresso').innerHTML = `
+    <div class="tiny" style="margin-bottom:8px">Snapshot sincronizado da app (localStorage → tabela progresso)</div>
+    <pre style="background:#182338;border:1px solid var(--line);border-radius:12px;padding:14px;overflow:auto;max-height:420px;font-size:12px;line-height:1.45">${escapeHtml(JSON.stringify({
+      streak: pr.streak,
+      last_dia: pr.last_dia,
+      licoes: licoesJson,
+      ultima: pr.ultima,
+      resp: pr.resp,
+      erradas: pr.erradas,
+      rever: pr.rever,
+      hist: pr.hist,
+      exames: pr.exames,
+      temas_visitados: a.temas_visitados,
+    }, null, 2))}</pre>`;
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function wireTabs() {
+  document.querySelectorAll('#tabs .tab').forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll('#tabs .tab').forEach(b => b.classList.toggle('on', b === btn));
+      ['timeline','licoes','videos','perguntas','progresso'].forEach(name => {
+        const pane = $('pane-' + name);
+        if (pane) pane.classList.toggle('hidden', name !== btn.dataset.tab);
+      });
+    };
+  });
+}
+
+$('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  $('loginErr').classList.add('hidden');
+  try {
+    const data = await api('/api/admin/login', {
+      method: 'POST',
+      body: JSON.stringify({ password: $('pwd').value }),
+    });
+    token = data.token;
+    localStorage.setItem(TOKEN_KEY, token);
+    showApp(true);
+    await refreshAll();
+  } catch (err) {
+    $('loginErr').textContent = err.message;
+    $('loginErr').classList.remove('hidden');
+  }
+});
+
+$('btnLogout').onclick = () => {
+  token = '';
+  localStorage.removeItem(TOKEN_KEY);
+  showApp(false);
+};
+$('btnRefresh').onclick = () => refreshAll().catch(alert);
+$('searchAluno').oninput = () => renderAlunos($('searchAluno').value);
+$('alunosBody').onclick = (e) => {
+  const tr = e.target.closest('tr[data-id]');
+  if (tr) selectAluno(tr.dataset.id).catch(alert);
+};
+
+async function refreshAll() {
+  await loadOverview();
+  await loadAlunos();
+  if (selectedId) await selectAluno(selectedId);
+}
+
+(async () => {
+  if (!token) return;
+  try {
+    showApp(true);
+    await refreshAll();
+  } catch {
+    token = '';
+    localStorage.removeItem(TOKEN_KEY);
+    showApp(false);
+  }
+})();
+</script>
+</body>
+</html>

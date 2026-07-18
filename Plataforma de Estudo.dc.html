@@ -1,0 +1,2238 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script src="https://unpkg.com/lucide@0.469.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/config.js"></script>
+<style>
+html,body{margin:0;padding:0;background:#0b1220}
+*{box-sizing:border-box}
+a{color:#38bdf8;text-decoration:none}
+a:hover{color:#2dd4bf}
+input,textarea,button{font-family:'Sora',sans-serif}
+input::placeholder,textarea::placeholder{color:#8b9bb4}
+::selection{background:#0d9488;color:#fff}
+.katex{font-size:1.06em}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes pop{from{transform:translate(-50%,8px) scale(.94);opacity:0}to{transform:translate(-50%,0) scale(1);opacity:1}}
+@keyframes girar{to{transform:rotate(360deg)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+@keyframes hitFlash{0%{filter:brightness(1)}35%{filter:brightness(2.1) saturate(1.3)}100%{filter:brightness(1)}}
+@keyframes dmgPop{0%{opacity:0;transform:translateY(10px) scale(.75)}18%{opacity:1;transform:translateY(0) scale(1.18)}100%{opacity:0;transform:translateY(-36px) scale(.95)}}
+@keyframes pulseGlow{0%,100%{box-shadow:0 0 0 0 rgba(45,212,191,.35)}50%{box-shadow:0 0 22px 4px rgba(45,212,191,.22)}}
+@keyframes logoBreath{0%,100%{transform:scale(1);filter:brightness(1)}50%{transform:scale(1.06);filter:brightness(1.15)}}
+@keyframes barShine{0%{transform:translateX(-120%)}100%{transform:translateX(220%)}}
+@keyframes bossIdle{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes bossHit{0%{transform:scale(1) rotate(0)}25%{transform:scale(1.12) rotate(-4deg)}50%{transform:scale(.94) rotate(3deg)}100%{transform:scale(1) rotate(0)}}
+@keyframes panelHit{0%{box-shadow:inset 0 0 0 0 rgba(45,212,191,0)}40%{box-shadow:inset 0 0 40px 2px rgba(45,212,191,.28)}100%{box-shadow:inset 0 0 0 0 rgba(45,212,191,0)}}
+@keyframes panelHurt{0%{box-shadow:inset 0 0 0 0 rgba(251,113,133,0)}40%{box-shadow:inset 0 0 50px 4px rgba(251,113,133,.35)}100%{box-shadow:inset 0 0 0 0 rgba(251,113,133,0)}}
+@keyframes slash{0%{opacity:0;transform:scaleX(.2) rotate(-18deg)}30%{opacity:.9}100%{opacity:0;transform:scaleX(1.4) rotate(-18deg)}}
+@keyframes victoryBurst{0%{transform:scale(.6);opacity:0}50%{transform:scale(1.15);opacity:1}100%{transform:scale(1);opacity:1}}
+@keyframes confettiFall{0%{transform:translateY(-8px) rotate(0);opacity:0}15%{opacity:1}100%{transform:translateY(48px) rotate(180deg);opacity:0}}
+@keyframes defeatPulse{0%,100%{border-color:rgba(251,113,133,.4)}50%{border-color:rgba(251,113,133,.85);box-shadow:0 0 28px rgba(251,113,133,.18)}}
+@keyframes optionIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:none}}
+@keyframes xpPing{0%{transform:scale(1)}40%{transform:scale(1.08)}100%{transform:scale(1)}}
+@keyframes levelFlash{0%{opacity:0}20%{opacity:1}100%{opacity:0}}
+@keyframes floatSoft{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.mp-ic{display:inline-flex;align-items:center;justify-content:center;color:currentColor;vertical-align:middle;flex-shrink:0;line-height:0}
+.mp-ic svg{width:100%;height:100%;display:block}
+.mp-icon-orb{width:42px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;background:rgba(45,212,191,.12);color:#2dd4bf;transition:transform .25s ease,background .25s ease}
+.mp-quick:hover .mp-icon-orb,.mp-card:hover .mp-icon-orb{transform:scale(1.08) rotate(-3deg)}
+.mp-card{transition:transform .28s cubic-bezier(.22,1,.36,1),box-shadow .28s ease,border-color .2s ease;animation:fadeUp .45s ease both}
+.mp-card:hover{transform:translateY(-5px);box-shadow:0 16px 40px rgba(0,0,0,.32);border-color:#2dd4bf!important}
+.mp-card:nth-child(1){animation-delay:.02s}.mp-card:nth-child(2){animation-delay:.06s}.mp-card:nth-child(3){animation-delay:.1s}.mp-card:nth-child(4){animation-delay:.14s}
+.mp-card:nth-child(5){animation-delay:.18s}.mp-card:nth-child(6){animation-delay:.22s}.mp-card:nth-child(7){animation-delay:.26s}.mp-card:nth-child(8){animation-delay:.3s}.mp-card:nth-child(9){animation-delay:.34s}
+.mp-quick{transition:border-color .25s ease,transform .28s cubic-bezier(.22,1,.36,1),box-shadow .25s ease;animation:fadeUp .4s ease both}
+.mp-quick:nth-child(1){animation-delay:.04s}.mp-quick:nth-child(2){animation-delay:.08s}.mp-quick:nth-child(3){animation-delay:.12s}.mp-quick:nth-child(4){animation-delay:.16s}
+.mp-quick:hover{border-color:#2dd4bf!important;transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,.24)}
+.mp-logo{animation:logoBreath 3.2s ease-in-out infinite}
+.mp-hp{height:10px;background:#2a3a52;border-radius:99px;overflow:hidden;position:relative}
+.mp-hp>i{display:block;height:100%;border-radius:99px;transition:width .55s cubic-bezier(.22,1,.36,1);position:relative;overflow:hidden}
+.mp-hp>i::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);width:40%;animation:barShine 2.4s ease-in-out infinite}
+.mp-boss-hit{animation:hitFlash .45s ease,panelHit .5s ease}
+.mp-player-hit{animation:shake .45s ease,panelHurt .5s ease}
+.mp-boss-avatar{animation:bossIdle 2.4s ease-in-out infinite;filter:drop-shadow(0 0 12px rgba(251,113,133,.35))}
+.mp-boss-avatar.hit{animation:bossHit .5s ease;filter:drop-shadow(0 0 28px rgba(45,212,191,.8)) brightness(1.4)}
+@keyframes auraRing{0%{transform:scale(.88);opacity:.9}50%{transform:scale(1.18);opacity:.25}100%{transform:scale(.88);opacity:.9}}
+@keyframes auraRingSlow{0%{transform:scale(1);opacity:.55}50%{transform:scale(1.35);opacity:.1}100%{transform:scale(1);opacity:.55}}
+@keyframes emberFloat{0%{transform:translateY(0) scale(1);opacity:0}15%{opacity:.9}100%{transform:translateY(-90px) scale(.4);opacity:0}}
+@keyframes sparkDrift{0%{transform:translate(0,8px) rotate(0);opacity:0}20%{opacity:1}100%{transform:translate(18px,-70px) rotate(40deg);opacity:0}}
+@keyframes stageBreath{0%,100%{filter:brightness(1)}50%{filter:brightness(1.12)}}
+@keyframes vsPulse{0%,100%{transform:scale(1);box-shadow:0 0 20px rgba(251,191,36,.35),0 0 48px rgba(251,191,36,.15)}50%{transform:scale(1.08);box-shadow:0 0 32px rgba(251,191,36,.55),0 0 70px rgba(251,191,36,.28)}}
+@keyframes energyBorder{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+@keyframes beamSweep{0%{opacity:0;transform:translateX(-40%) skewX(-18deg)}35%{opacity:.7}100%{opacity:0;transform:translateX(40%) skewX(-18deg)}}
+@keyframes nameGlow{0%,100%{text-shadow:0 0 8px rgba(45,212,191,.2)}50%{text-shadow:0 0 18px rgba(45,212,191,.55),0 0 36px rgba(45,212,191,.25)}}
+@keyframes bossNameGlow{0%,100%{text-shadow:0 0 8px rgba(251,113,133,.25)}50%{text-shadow:0 0 20px rgba(251,113,133,.6),0 0 40px rgba(251,113,133,.3)}}
+@keyframes logPulse{0%,100%{opacity:.75}50%{opacity:1}}
+.mp-slash{position:absolute;left:6%;right:6%;top:40%;height:4px;background:linear-gradient(90deg,transparent,#2dd4bf,rgba(255,255,255,.9),#2dd4bf,transparent);border-radius:99px;pointer-events:none;opacity:0;z-index:6;box-shadow:0 0 24px #2dd4bf,0 0 48px rgba(45,212,191,.6)}
+.mp-slash.on{animation:slash .42s ease forwards}
+.mp-dmg{position:absolute;font-weight:900;font-size:28px;letter-spacing:-.02em;text-shadow:0 0 12px currentColor,0 4px 18px rgba(0,0,0,.65);animation:dmgPop 1.05s ease forwards;pointer-events:none;z-index:8}
+.mp-combat-panel{transition:border-color .3s ease,box-shadow .3s ease;animation:fadeUp .4s ease,stageBreath 4s ease-in-out infinite}
+.mp-arena-stage{position:relative;border-radius:24px;overflow:visible;margin-bottom:22px;isolation:auto;
+  border:1px solid rgba(45,212,191,.4);
+  box-shadow:0 0 0 1px rgba(251,113,133,.12),0 0 60px rgba(45,212,191,.18),0 0 100px rgba(251,113,133,.1),0 24px 60px rgba(0,0,0,.45)}
+.mp-arena-stage::before{content:'';position:absolute;inset:0;border-radius:24px;overflow:hidden;background:
+  radial-gradient(ellipse 90% 60% at 50% -10%,rgba(45,212,191,.28),transparent 50%),
+  radial-gradient(ellipse 55% 50% at 12% 75%,rgba(251,113,133,.28),transparent 55%),
+  radial-gradient(ellipse 55% 50% at 88% 75%,rgba(56,189,248,.26),transparent 55%),
+  radial-gradient(circle at 50% 100%,rgba(251,191,36,.08),transparent 40%),
+  linear-gradient(180deg,#1a2840 0%,#101a2c 45%,#0a101c 100%);
+  z-index:0}
+.mp-arena-stage::after{content:'';position:absolute;left:5%;right:5%;bottom:8%;height:32%;border-radius:50%;background:radial-gradient(ellipse at center,rgba(45,212,191,.18),rgba(0,0,0,.55) 55%,transparent 70%);z-index:1;pointer-events:none;filter:blur(2px)}
+.mp-arena-fx{position:absolute;inset:0;border-radius:24px;z-index:1;pointer-events:none;overflow:hidden}
+.mp-arena-fx .beam{position:absolute;top:20%;left:0;right:0;height:80px;background:linear-gradient(90deg,transparent,rgba(45,212,191,.15),transparent);animation:beamSweep 3.8s ease-in-out infinite}
+.mp-arena-fx .ember{position:absolute;width:5px;height:5px;border-radius:50%;background:#fbbf24;box-shadow:0 0 10px #fbbf24,0 0 20px rgba(251,191,36,.6);animation:emberFloat 2.8s ease-in infinite}
+.mp-arena-fx .ember:nth-child(2){left:12%;bottom:18%;animation-delay:.3s;background:#fb7185;box-shadow:0 0 10px #fb7185}
+.mp-arena-fx .ember:nth-child(3){left:22%;bottom:22%;animation-delay:.9s;width:3px;height:3px}
+.mp-arena-fx .ember:nth-child(4){left:70%;bottom:16%;animation-delay:.5s;background:#2dd4bf;box-shadow:0 0 12px #2dd4bf}
+.mp-arena-fx .ember:nth-child(5){left:82%;bottom:24%;animation-delay:1.2s;background:#38bdf8;box-shadow:0 0 10px #38bdf8}
+.mp-arena-fx .ember:nth-child(6){left:48%;bottom:14%;animation-delay:1.6s;width:4px;height:4px}
+.mp-arena-fx .spark{position:absolute;width:3px;height:10px;border-radius:99px;background:linear-gradient(#fff,#2dd4bf);animation:sparkDrift 2.4s ease-out infinite}
+.mp-arena-fx .spark:nth-child(7){left:18%;bottom:30%;animation-delay:.2s}
+.mp-arena-fx .spark:nth-child(8){left:78%;bottom:28%;animation-delay:1s;background:linear-gradient(#fff,#fb7185)}
+.mp-arena-inner{position:relative;z-index:2;padding:36px 28px 34px}
+.mp-arena-top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+.mp-fighters{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:end;margin-bottom:8px;overflow:visible}
+@media(max-width:640px){.mp-fighters{grid-template-columns:1fr;gap:20px}.mp-vs{order:-1;margin:0 auto}}
+.mp-fighter{display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;position:relative;min-width:0;overflow:visible;padding:16px 6px 0}
+.mp-fighter.boss{align-items:flex-start;text-align:left}
+.mp-fighter.player{align-items:flex-end;text-align:right}
+@media(max-width:640px){.mp-fighter.boss,.mp-fighter.player{align-items:center;text-align:center}}
+.mp-aura{position:absolute;inset:-22px;border-radius:40px;pointer-events:none;z-index:0}
+.mp-aura::before,.mp-aura::after{content:'';position:absolute;inset:0;border-radius:inherit;border:2px solid currentColor;animation:auraRing 2.2s ease-out infinite}
+.mp-aura::after{inset:-10px;animation:auraRingSlow 3.4s ease-out infinite;opacity:.5}
+.mp-fighter.boss .mp-aura{color:rgba(251,113,133,.85);filter:drop-shadow(0 0 16px rgba(251,113,133,.7))}
+.mp-fighter.player .mp-aura{color:rgba(45,212,191,.9);border-radius:50%;filter:drop-shadow(0 0 16px rgba(45,212,191,.7))}
+.mp-portrait{width:108px;height:108px;border-radius:26px;display:flex;align-items:center;justify-content:center;color:#fff;position:relative;z-index:1;overflow:visible;
+  border:2px solid rgba(255,255,255,.22);
+  box-shadow:0 0 0 4px rgba(0,0,0,.25),0 16px 48px rgba(0,0,0,.45),0 0 40px rgba(255,255,255,.08)}
+.mp-portrait::before{content:'';position:absolute;inset:-14px;border-radius:34px;background:inherit;filter:blur(22px);opacity:.7;z-index:-1}
+.mp-portrait::after{content:'';position:absolute;inset:0;border-radius:inherit;background:linear-gradient(135deg,rgba(255,255,255,.28),transparent 42%,transparent 58%,rgba(0,0,0,.2));pointer-events:none}
+.mp-portrait.player-p{background:linear-gradient(145deg,#5eead4,#0d9488 45%,#115e59);width:88px;height:88px;border-radius:50%;font-weight:800;font-size:30px;
+  box-shadow:0 0 0 3px rgba(45,212,191,.35),0 0 36px rgba(45,212,191,.55),0 12px 36px rgba(0,0,0,.4)}
+.mp-portrait.player-p::before{border-radius:50%;inset:-16px;opacity:.75}
+.mp-vs{width:62px;height:62px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#3a2e14,#12100a 70%);
+  border:2px solid rgba(251,191,36,.75);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:16px;color:#fde68a;
+  align-self:center;letter-spacing:.06em;animation:vsPulse 2s ease-in-out infinite;z-index:3;position:relative;flex-shrink:0}
+.mp-vs::before{content:'';position:absolute;inset:-8px;border-radius:50%;border:1px solid rgba(251,191,36,.35);animation:auraRing 2.6s ease-out infinite}
+.mp-hp-block{width:100%;max-width:250px;min-width:0}
+.mp-hp-label{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:6px;font-size:12px;font-weight:700}
+.mp-hp.big{height:16px;background:rgba(20,28,42,.95);border:1px solid rgba(255,255,255,.1);box-shadow:inset 0 2px 8px rgba(0,0,0,.5),0 0 12px rgba(0,0,0,.2)}
+.mp-hp.big>i{box-shadow:0 0 12px currentColor}
+.mp-name-tag{font-weight:800;font-size:18px;letter-spacing:-.02em;line-height:1.25;word-break:break-word;overflow-wrap:anywhere;max-width:100%}
+.mp-fighter.boss .mp-name-tag{animation:bossNameGlow 2.4s ease-in-out infinite}
+.mp-fighter.player .mp-name-tag{animation:nameGlow 2.4s ease-in-out infinite}
+.mp-sub-tag{font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#2dd4bf;margin-bottom:2px;text-shadow:0 0 12px rgba(45,212,191,.4)}
+.mp-battle-log{margin-top:16px;min-height:24px;text-align:center;font-size:13.5px;font-weight:700;color:#e2e8f0;
+  text-shadow:0 0 20px rgba(45,212,191,.25);animation:logPulse 2.8s ease-in-out infinite;
+  padding:10px 14px;border-radius:12px;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.06);overflow-wrap:anywhere}
+.mp-aids{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;padding:12px 14px;background:linear-gradient(135deg,rgba(251,191,36,.08),rgba(18,28,46,.85));
+  border:1px solid rgba(251,191,36,.35);border-radius:14px;box-shadow:0 0 28px rgba(251,191,36,.08)}
+.mp-aids:empty{display:none}
+.mp-aid-chip{cursor:pointer;transition:transform .15s ease,border-color .15s ease,box-shadow .15s ease}
+.mp-aid-chip:hover{transform:translateY(-2px);box-shadow:0 0 16px rgba(251,191,36,.35)}
+.mp-attack-shell{position:relative;border-radius:18px;padding:1px;background:linear-gradient(120deg,#2dd4bf,#fbbf24,#38bdf8,#2dd4bf);background-size:200% 200%;animation:energyBorder 4s linear infinite;margin-top:10px}
+.mp-attack-panel{position:relative;border-radius:17px;padding:28px 22px 22px;overflow:visible;
+  background:linear-gradient(165deg,#172438,#0e1624 60%,#0c1420);
+  box-shadow:0 0 40px rgba(45,212,191,.12),0 20px 50px rgba(0,0,0,.35)}
+.mp-attack-panel::before{content:'ATAQUE';position:absolute;top:-11px;left:18px;z-index:2;background:#0b1220;border:1px solid rgba(45,212,191,.5);color:#5eead4;font-size:10px;font-weight:800;letter-spacing:.14em;padding:4px 12px;border-radius:999px;box-shadow:0 0 16px rgba(45,212,191,.35)}
+.mp-q-card{animation:fadeUp .35s ease}
+.mp-q-card .mp-opt{animation:optionIn .35s ease both}
+.mp-q-card .mp-opt:nth-child(1){animation-delay:.04s}.mp-q-card .mp-opt:nth-child(2){animation-delay:.08s}.mp-q-card .mp-opt:nth-child(3){animation-delay:.12s}.mp-q-card .mp-opt:nth-child(4){animation-delay:.16s}
+.mp-opt{transition:transform .15s ease,border-color .15s ease,background .15s ease,box-shadow .15s ease}
+.mp-opt:hover{box-shadow:0 0 20px rgba(45,212,191,.15)}
+.mp-opt:active{transform:scale(.985)}
+.mp-continue-btn{margin-top:16px;background:linear-gradient(135deg,#2dd4bf,#0d9488);border-radius:12px;padding:14px;text-align:center;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 4px 22px rgba(45,212,191,.4),0 0 40px rgba(45,212,191,.15);transition:filter .2s ease,transform .2s ease}
+.mp-continue-btn:hover{filter:brightness(1.12);transform:translateY(-1px)}
+@keyframes arenaPulse{0%,100%{opacity:.55}50%{opacity:1}}
+.mp-arena-live{display:inline-flex;align-items:center;gap:7px;font-size:11.5px;font-weight:800;color:#fb7185;text-transform:uppercase;letter-spacing:.1em;text-shadow:0 0 14px rgba(251,113,133,.55)}
+.mp-arena-live i{width:8px;height:8px;border-radius:50%;background:#fb7185;display:block;animation:arenaPulse 1s ease infinite;box-shadow:0 0 12px #fb7185,0 0 24px rgba(251,113,133,.7)}
+.mp-boss-hit{animation:hitFlash .4s ease,panelHit .45s ease;box-shadow:0 0 80px rgba(45,212,191,.35)!important}
+.mp-player-hit{animation:shake .4s ease,panelHurt .45s ease;box-shadow:0 0 80px rgba(251,113,133,.4)!important}
+.mp-victory{animation:victoryBurst .55s cubic-bezier(.22,1,.36,1);position:relative;overflow:hidden}
+.mp-victory::before,.mp-victory::after{content:'✦';position:absolute;font-size:14px;color:#2dd4bf;animation:confettiFall 1.4s ease-out infinite;opacity:.8}
+.mp-victory::before{left:18%;top:12%;animation-delay:.1s;color:#fbbf24}
+.mp-victory::after{right:20%;top:8%;animation-delay:.35s;color:#38bdf8}
+.mp-defeat{animation:defeatPulse 1.6s ease infinite,fadeUp .4s ease}
+.mp-xp-ping{animation:xpPing .5s ease}
+.mp-level-flash{position:fixed;inset:0;pointer-events:none;z-index:90;background:radial-gradient(circle at 50% 30%,rgba(251,191,36,.28),transparent 55%);animation:levelFlash 1.1s ease forwards}
+.mp-float{animation:floatSoft 3.5s ease-in-out infinite}
+.mp-inv-item{animation:fadeUp .4s ease both}
+.mp-inv-item:nth-child(1){animation-delay:.04s}.mp-inv-item:nth-child(2){animation-delay:.08s}.mp-inv-item:nth-child(3){animation-delay:.12s}.mp-inv-item:nth-child(4){animation-delay:.16s}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+</style>
+</helmet>
+<div style="min-height:100vh;background:radial-gradient(circle at 12% -8%,rgba(45,212,191,.16),transparent 32%),radial-gradient(circle at 92% 12%,rgba(56,189,248,.12),transparent 30%),#0b1220;color:#e8eef7;font-family:'Sora',sans-serif">
+  <div style="position:fixed;top:0;left:0;right:0;height:62px;background:rgba(11,18,32,.82);backdrop-filter:blur(18px);border-bottom:1px solid #2a3a52;display:flex;align-items:center;gap:14px;padding:0 20px;z-index:50">
+    <div onClick="{{irHome}}" style="display:flex;align-items:center;gap:10px;cursor:pointer">
+      <div class="mp-logo" style="width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#2dd4bf,#0d9488);display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 0 18px rgba(45,212,191,.32)">{{logoIcon}}</div>
+      <div style="font-weight:800;font-size:17px;letter-spacing:-0.02em;color:#e8eef7">Mat<span style="color:#2dd4bf">Prep</span></div>
+    </div>
+    <sc-if value="{{naoMobile}}" hint-placeholder-val="{{true}}">
+      <div style="display:flex;gap:4px;margin-left:10px">
+        <sc-for list="{{navItens}}" as="it" hint-placeholder-count="4">
+          <div onClick="{{it.abrir}}" style="{{it.style}}" style-hover="color:#fff"><span style="display:inline-flex;align-items:center;gap:7px">{{it.ic}}{{it.rot}}</span></div>
+        </sc-for>
+      </div>
+    </sc-if>
+    <div style="flex:1"></div>
+    <sc-if value="{{naoMobile}}" hint-placeholder-val="{{true}}">
+      <div style="display:flex;align-items:center;gap:10px;margin-right:8px">
+        <div class="{{xpHudFullClass}}" style="background:#121c2e;border:1px solid #2a3a52;border-radius:12px;padding:6px 12px;min-width:140px">
+          <div style="display:flex;justify-content:space-between;font-size:11px;font-weight:700;margin-bottom:4px"><span style="color:#fbbf24">Nv. {{gNivel}}</span><span style="color:#8b9bb4">{{gXpTxt}}</span></div>
+          <div class="mp-hp"><i style="{{gXpBar}}"></i></div>
+        </div>
+        <div class="{{playerHudFullClass}}" style="background:#121c2e;border:1px solid #2a3a52;border-radius:12px;padding:6px 12px;min-width:120px">
+          <div style="display:flex;justify-content:space-between;font-size:11px;font-weight:700;margin-bottom:4px"><span style="color:#fb7185">HP</span><span style="color:#8b9bb4">{{gHpTxt}}</span></div>
+          <div class="mp-hp"><i style="{{gHpBar}}"></i></div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;background:#121c2e;border:1px solid #2a3a52;border-radius:10px;padding:0 10px;color:#8b9bb4">{{searchIcon}}<input value="{{pesquisa}}" onChange="{{aoPesquisar}}" placeholder="Pesquisar zonas…" style="background:transparent;border:0;padding:9px 0;color:#e8eef7;font-size:13.5px;width:160px;outline:none"></input></div>
+    </sc-if>
+    <div title="Dias seguidos de estudo" style="display:flex;align-items:center;gap:6px;background:#121c2e;border:1px solid #2a3a52;border-radius:999px;padding:7px 13px;font-weight:700;font-size:13.5px;color:#fbbf24">{{streakIcon}} <span style="color:#e8eef7">{{streak}}</span></div>
+    <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#2dd4bf,#0d9488);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:#fff;border:2px solid #2a3a52">{{inicial}}</div>
+  </div>
+
+  <sc-if value="{{aCarregar}}" hint-placeholder-val="{{true}}">
+    <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px">
+      <div style="width:42px;height:42px;border:3px solid #2a3a52;border-top-color:#2dd4bf;border-radius:50%;animation:girar .8s linear infinite"></div>
+      <div style="color:#8b84a3;font-size:14px">A carregar a Arena MatPrep…</div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{vHome}}" hint-placeholder-val="{{false}}">
+    <div style="max-width:1120px;margin:0 auto;padding:88px 20px 110px;animation:fadeUp .4s ease">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:8px">
+        <div>
+          <h1 style="margin:0;font-size:30px;font-weight:800;letter-spacing:-0.02em">{{saudacao}}, {{nome}}</h1>
+          <p style="margin:6px 0 0;color:#8b9bb4;font-size:15px">Nível {{gNivel}} · derrota bosses com matemática · {{nBanco}} desafios no grimório</p>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <div style="background:#121c2e;border:1px solid #2a3a52;border-radius:12px;padding:10px 16px;text-align:center"><div style="font-weight:800;font-size:18px;color:#fbbf24">{{gNivel}}</div><div style="font-size:11.5px;color:#8b84a3">nível</div></div>
+          <div style="background:#121c2e;border:1px solid #2a3a52;border-radius:12px;padding:10px 16px;text-align:center"><div style="font-weight:800;font-size:18px;color:#2dd4bf">{{gVitorias}}</div><div style="font-size:11.5px;color:#8b84a3">bosses</div></div>
+          <div style="background:#121c2e;border:1px solid #2a3a52;border-radius:12px;padding:10px 16px;text-align:center"><div style="font-weight:800;font-size:18px;color:#2dd4bf">{{precisaoGlobal}}</div><div style="font-size:11.5px;color:#8b84a3">precisão</div></div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-top:20px">
+        <div onClick="{{irArena}}" class="mp-quick" style="background:linear-gradient(145deg,#182338,#121c2e);border:1px solid rgba(45,212,191,.35);border-radius:14px;padding:16px;cursor:pointer;animation:fadeUp .4s ease both,pulseGlow 2.8s ease-in-out infinite">
+          <div class="mp-icon-orb" style="margin-bottom:10px;color:#fb7185;background:rgba(251,113,133,.14)">{{swordIcon}}</div>
+          <div style="font-weight:800;font-size:14px">Entrar na Arena</div>
+          <div style="font-size:12px;color:#8b9bb4;margin-top:3px">Acerta = dano no boss</div>
+        </div>
+        <div onClick="{{irInventario}}" class="mp-quick" style="background:#121c2e;border:1px solid #2a3a52;border-radius:14px;padding:16px;cursor:pointer">
+          <div class="mp-icon-orb" style="margin-bottom:10px;color:#fbbf24;background:rgba(251,191,36,.12)">{{bagIcon}}</div>
+          <div style="font-weight:800;font-size:14px">Inventário</div>
+          <div style="font-size:12px;color:#8b9bb4;margin-top:3px">{{nItens}} itens de ajuda</div>
+        </div>
+        <div onClick="{{irAprender}}" class="mp-quick" style="background:#121c2e;border:1px solid #2a3a52;border-radius:14px;padding:16px;cursor:pointer">
+          <div class="mp-icon-orb" style="margin-bottom:10px;color:#38bdf8;background:rgba(56,189,248,.12)">{{learnIcon}}</div>
+          <div style="font-weight:800;font-size:14px">Treinar (teoria)</div>
+          <div style="font-size:12px;color:#8b9bb4;margin-top:3px">Prepara-te antes do boss</div>
+        </div>
+        <div onClick="{{irExame}}" class="mp-quick" style="background:#121c2e;border:1px solid #2a3a52;border-radius:14px;padding:16px;cursor:pointer">
+          <div class="mp-icon-orb" style="margin-bottom:10px;color:#a78bfa;background:rgba(167,139,250,.12)">{{examIcon}}</div>
+          <div style="font-weight:800;font-size:14px">Exame Final</div>
+          <div style="font-size:12px;color:#8b9bb4;margin-top:3px">Simulação clássica</div>
+        </div>
+      </div>
+      <sc-if value="{{temUltima}}" hint-placeholder-val="{{false}}">
+        <div onClick="{{ultimaAbrir}}" style="margin-top:20px;background:linear-gradient(120deg,#182338,#121c2e 60%);border:1px solid #2a3a52;border-radius:16px;padding:18px 22px;display:flex;align-items:center;gap:18px;cursor:pointer;flex-wrap:wrap;transition:all .2s" style-hover="border-color:#2dd4bf;box-shadow:0 6px 30px rgba(45,212,191,.18)">
+          <div style="width:58px;height:58px;border-radius:14px;background:{{ultimaGrad}};display:flex;align-items:center;justify-content:center;font-size:29px;flex-shrink:0">{{ultimaIcone}}</div>
+          <div style="flex:1;min-width:220px">
+            <div style="font-size:11.5px;font-weight:700;color:#2dd4bf;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px">Continuar a campanha</div>
+            <div style="font-weight:700;font-size:16.5px">{{ultimaTitulo}}</div>
+            <div style="color:#8b84a3;font-size:13px;margin-top:2px">{{ultimaLicao}}</div>
+            <div style="margin-top:10px;height:6px;background:#2a3a52;border-radius:99px;max-width:340px"><div style="{{ultimaBarra}}"></div></div>
+          </div>
+          <div style="background:linear-gradient(135deg,#2dd4bf,#0d9488);border-radius:11px;padding:11px 22px;font-weight:700;font-size:14px;box-shadow:0 4px 18px rgba(45,212,191,.28)">{{playIcon}} Continuar</div>
+        </div>
+      </sc-if>
+      <h2 style="margin:34px 0 16px;font-size:19px;font-weight:800;letter-spacing:-0.01em">Zonas de treino</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:16px">
+        <sc-for list="{{cursos}}" as="c" hint-placeholder-count="8">
+          <div onClick="{{c.abrir}}" class="mp-card" style="background:#121c2e;border:1px solid #2a3a52;border-radius:16px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column">
+            <div style="height:104px;background:{{c.grad}};display:flex;align-items:center;justify-content:center;color:#fff">{{c.icone}}</div>
+            <div style="padding:15px 16px 16px;display:flex;flex-direction:column;gap:9px;flex:1">
+              <div style="display:flex;gap:6px;align-items:center">
+                <span style="{{c.difStyle}}">{{c.dif}}</span>
+                <span style="font-size:11.5px;color:#8b84a3">5 lições · {{c.dur}}</span>
+              </div>
+              <div style="font-weight:700;font-size:15px;line-height:1.35;flex:1">{{c.titulo}}</div>
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:11.5px;color:#8b84a3;margin-bottom:5px"><span>{{c.pctTxt}} concluído</span><span>{{c.feitas}}/5</span></div>
+                <div style="height:6px;background:#2a3a52;border-radius:99px"><div style="{{c.barra}}"></div></div>
+              </div>
+              <div style="{{c.btnStyle}}" style-hover="filter:brightness(1.15)">{{c.btn}}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+      <sc-if value="{{temRecomendado}}" hint-placeholder-val="{{false}}">
+        <h2 style="margin:34px 0 14px;font-size:19px;font-weight:800">Recomendado para ti</h2>
+        <div onClick="{{recAbrir}}" style="background:#121c2e;border:1px solid #2a3a52;border-radius:16px;padding:18px 22px;display:flex;align-items:center;gap:18px;cursor:pointer;flex-wrap:wrap;transition:all .2s" style-hover="border-color:#2dd4bf;box-shadow:0 6px 30px rgba(45,212,191,.18)">
+          <div style="width:58px;height:58px;border-radius:14px;background:{{recGrad}};display:flex;align-items:center;justify-content:center;font-size:29px;flex-shrink:0">{{recIcone}}</div>
+          <div style="flex:1;min-width:220px">
+            <div style="font-weight:700;font-size:16px">{{recTitulo}}</div>
+            <div style="color:#2dd4bf;font-size:13.5px;margin-top:3px">{{targetIcon}} {{recMotivo}}</div>
+          </div>
+          <div style="border:1px solid #2dd4bf;color:#2dd4bf;border-radius:11px;padding:10px 20px;font-weight:700;font-size:13.5px">Reforçar tema</div>
+        </div>
+      </sc-if>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{vTema}}" hint-placeholder-val="{{false}}">
+    <div style="max-width:1120px;margin:0 auto;padding:84px 20px 110px;animation:fadeUp .35s ease">
+      <div onClick="{{irHome}}" style="color:#38bdf8;font-size:13.5px;font-weight:600;cursor:pointer;margin-bottom:14px;display:inline-flex;align-items:center;gap:6px">{{backIcon}} Voltar à base</div>
+      <div style="background:#121c2e;border:1px solid #2a3a52;border-radius:18px;padding:24px;display:flex;gap:20px;align-items:center;flex-wrap:wrap">
+        <div style="width:76px;height:76px;border-radius:18px;background:{{temaGrad}};display:flex;align-items:center;justify-content:center;font-size:38px;flex-shrink:0;box-shadow:0 6px 24px rgba(45,212,191,.25)">{{temaIcone}}</div>
+        <div style="flex:1;min-width:250px">
+          <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px"><span style="{{temaDifStyle}}">{{temaDif}}</span><span style="font-size:12px;color:#8b84a3">5 lições · {{temaDur}}</span></div>
+          <h1 style="margin:0;font-size:23px;font-weight:800;letter-spacing:-0.02em">{{temaTitulo}}</h1>
+          <p style="margin:6px 0 0;color:#8b84a3;font-size:14px;line-height:1.5">{{temaDesc}}</p>
+          <div style="display:flex;align-items:center;gap:12px;margin-top:12px">
+            <div style="flex:1;max-width:300px;height:7px;background:#2a3a52;border-radius:99px"><div style="{{temaBarra}}"></div></div>
+            <span style="font-size:12.5px;color:#2dd4bf;font-weight:700">{{temaPct}} concluído</span>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div onClick="{{temaContinuar}}" style="background:linear-gradient(135deg,#2dd4bf,#0d9488);border-radius:12px;padding:13px 26px;font-weight:700;font-size:14.5px;cursor:pointer;box-shadow:0 4px 20px rgba(45,212,191,.3);text-align:center" style-hover="filter:brightness(1.15)">{{temaCTA}}</div>
+          <sc-if value="{{temBossZona}}" hint-placeholder-val="{{false}}">
+            <div onClick="{{desafiarBossZona}}" style="border:1px solid rgba(251,113,133,.45);color:#fb7185;border-radius:12px;padding:11px 18px;font-weight:700;font-size:13.5px;cursor:pointer;text-align:center" style-hover="background:rgba(251,113,133,.08)">{{swordIcon}} Desafiar {{bossZonaNome}}</div>
+          </sc-if>
+        </div>
+      </div>
+      <div style="display:flex;gap:18px;margin-top:18px;flex-wrap:wrap;align-items:flex-start">
+        <div style="flex:1 1 260px;max-width:400px;background:#121c2e;border:1px solid #2a3a52;border-radius:16px;padding:14px">
+          <div style="font-size:11.5px;font-weight:700;color:#8b84a3;text-transform:uppercase;letter-spacing:.08em;padding:4px 10px 10px">Currículo do curso</div>
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <sc-for list="{{curriculo}}" as="li" hint-placeholder-count="5">
+              <div onClick="{{li.abrir}}" style="{{li.style}}" style-hover="background:#1a2740">
+                <span style="{{li.icStyle}}">{{li.icone}}</span>
+                <div style="flex:1"><div style="font-weight:600;font-size:13.5px">{{li.titulo}}</div><div style="font-size:11.5px;color:#8b84a3;margin-top:1px">{{li.sub}}</div></div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="flex:2.4 1 420px;background:#121c2e;border:1px solid #2a3a52;border-radius:16px;padding:26px">
+          <div style="display:inline-flex;align-items:center;gap:7px;background:rgba(45,212,191,.12);border:1px solid rgba(45,212,191,.28);color:#2dd4bf;border-radius:999px;padding:5px 13px;font-size:12px;font-weight:700">{{licaoIc}} {{licaoTipo}}</div>
+          <h2 style="margin:12px 0 4px;font-size:21px;font-weight:800">{{licaoTitulo}}</h2>
+          <div style="height:1px;background:#2a3a52;margin:16px 0 18px"></div>
+          <sc-if value="{{isTeoria}}" hint-placeholder-val="{{false}}">
+            <sc-for list="{{teoriaParas}}" as="p" hint-placeholder-count="3">
+              <p style="color:#cfc8e6;font-size:15px;line-height:1.75;margin:0 0 16px">{{p.c}}</p>
+            </sc-for>
+            <sc-if value="{{temVideoTema}}" hint-placeholder-val="{{false}}">
+              <div style="margin-top:8px;padding-top:18px;border-top:1px solid #2a3a52">
+                <div style="display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:#2dd4bf;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">{{playIcon}} Vídeo-aula</div>
+                <div style="font-weight:700;font-size:15px;color:#e8eef7">{{videoTemaTitulo}}</div>
+                <div style="font-size:12.5px;color:#8b9bb4;margin-top:3px">{{videoTemaCanal}}</div>
+                <div style="margin-top:12px">{{videoTemaEmbed}}</div>
+                <div onClick="{{abrirVideoTema}}" style="margin-top:12px;display:inline-flex;align-items:center;gap:8px;border:1px solid #2a3a52;color:#38bdf8;border-radius:10px;padding:10px 14px;font-weight:700;font-size:13px;cursor:pointer">{{extIcon}} Abrir no YouTube</div>
+              </div>
+            </sc-if>
+          </sc-if>
+          <sc-if value="{{isFormulas}}" hint-placeholder-val="{{false}}">
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <sc-for list="{{formulasLista}}" as="f" hint-placeholder-count="5">
+                <div style="background:#182338;border:1px solid #2a3a52;border-radius:13px;padding:14px 18px">
+                  <div style="font-size:12px;font-weight:700;color:#2dd4bf;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">{{f.n}}</div>
+                  <div style="color:#fff;overflow-x:auto">{{f.c}}</div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{isExemplo}}" hint-placeholder-val="{{false}}">
+            <div style="background:rgba(45,212,191,.08);border:1px solid rgba(45,212,191,.28);border-radius:13px;padding:16px 18px;color:#e8eef7;font-size:15px;line-height:1.7;margin-bottom:18px">
+              <div style="font-size:11.5px;font-weight:700;color:#2dd4bf;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">Enunciado</div>
+              {{exemploEnunciado}}
+            </div>
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <sc-for list="{{passosVisiveis}}" as="pp" hint-placeholder-count="1">
+                <div style="display:flex;gap:14px;background:#182338;border:1px solid #2a3a52;border-radius:13px;padding:15px 17px;animation:fadeUp .3s ease">
+                  <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#2dd4bf,#0d9488);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13.5px;flex-shrink:0">{{pp.n}}</div>
+                  <div style="flex:1"><div style="font-weight:700;font-size:14px;margin-bottom:4px">{{pp.t}}</div><div style="color:#cfc8e6;font-size:14.5px;line-height:1.65">{{pp.c}}</div></div>
+                </div>
+              </sc-for>
+            </div>
+            <sc-if value="{{temMaisPassos}}" hint-placeholder-val="{{false}}">
+              <div onClick="{{revelarPasso}}" style="margin-top:16px;border:1px dashed #2dd4bf;color:#2dd4bf;border-radius:12px;padding:13px;text-align:center;font-weight:700;font-size:14px;cursor:pointer">{{revealIcon}} Revelar passo {{proximoPasso}} de {{totalPassos}}</div>
+            </sc-if>
+            <sc-if value="{{exemploCompleto}}" hint-placeholder-val="{{false}}">
+              <div style="margin-top:16px;background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.4);color:#34d399;border-radius:12px;padding:13px;text-align:center;font-weight:700;font-size:14px">{{checkIcon}} Exemplo completo — lição concluída!</div>
+            </sc-if>
+          </sc-if>
+          <sc-if value="{{isErros}}" hint-placeholder-val="{{false}}">
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <sc-for list="{{errosLista}}" as="er" hint-placeholder-count="3">
+                <div style="background:#182338;border:1px solid #2a3a52;border-radius:13px;padding:15px 17px">
+                  <div style="display:flex;gap:10px;color:#fca5a5;font-size:14.5px;line-height:1.6"><span>❌</span><span style="flex:1">{{er.e}}</span></div>
+                  <div style="display:flex;gap:10px;color:#86efac;font-size:14.5px;line-height:1.6;margin-top:8px"><span>✅</span><span style="flex:1">{{er.c}}</span></div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{isMiniQuiz}}" hint-placeholder-val="{{false}}">
+            <sc-if value="{{mqAtiva}}" hint-placeholder-val="{{false}}">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+                <span style="font-size:13px;color:#8b84a3;font-weight:600">Pergunta {{mqNum}} de {{mqTotal}}</span>
+                <span style="font-size:13px;color:#2dd4bf;font-weight:700">{{mqCertas}} certas</span>
+              </div>
+              <div style="font-size:16.5px;line-height:1.65;color:#fff;margin-bottom:16px">{{mqCorpo}}</div>
+              <div style="display:flex;flex-direction:column;gap:9px">
+                <sc-for list="{{mqOps}}" as="o" hint-placeholder-count="4">
+                  <div onClick="{{o.escolher}}" style="{{o.style}}" style-hover="border-color:#2dd4bf">
+                    <span style="{{o.letraStyle}}">{{o.letra}}</span><span style="flex:1">{{o.c}}</span>
+                  </div>
+                </sc-for>
+              </div>
+              <sc-if value="{{mqRespondida}}" hint-placeholder-val="{{false}}">
+                <div style="{{mqFeedStyle}}">
+                  <div style="font-weight:800;font-size:14.5px;margin-bottom:8px">{{mqFeedTitulo}}</div>
+                  <sc-if value="{{mqErro}}" hint-placeholder-val="{{false}}">
+                    <div style="margin:10px 0 12px;padding:12px;border-radius:11px;background:rgba(251,113,133,.08);border:1px solid rgba(251,113,133,.28)">
+                      <div style="font-size:12px;font-weight:700;color:#fb7185;margin-bottom:4px">Porque erraste</div>
+                      <div style="font-size:13.5px;line-height:1.5;color:#fecdd3;margin-bottom:8px">{{mqErroPorque}}</div>
+                      <div style="font-size:12px;font-weight:700;color:#fbbf24;margin-bottom:4px">O que precisavas fazer</div>
+                      <div style="font-size:13.5px;line-height:1.5;color:#fde68a">{{mqErroDica}}</div>
+                      <div onClick="{{mqAbrirVideo}}" style="margin-top:10px;display:inline-flex;align-items:center;gap:6px;color:#fbbf24;font-weight:700;font-size:13px;cursor:pointer">{{playIcon}} Vídeo Sandro Curió</div>
+                    </div>
+                  </sc-if>
+                  <sc-for list="{{mqPassos}}" as="s" hint-placeholder-count="2">
+                    <div style="color:#cfc8e6;font-size:14px;line-height:1.6;margin-bottom:5px">{{s.c}}</div>
+                  </sc-for>
+                </div>
+                <div onClick="{{mqProxima}}" style="margin-top:14px;background:linear-gradient(135deg,#2dd4bf,#0d9488);border-radius:12px;padding:13px;text-align:center;font-weight:700;font-size:14.5px;cursor:pointer;box-shadow:0 4px 18px rgba(45,212,191,.28)" style-hover="filter:brightness(1.15)">{{mqBtnProx}}</div>
+              </sc-if>
+            </sc-if>
+            <sc-if value="{{mqTerminado}}" hint-placeholder-val="{{false}}">
+              <div style="text-align:center;padding:24px 10px">
+                <div style="font-size:44px;margin-bottom:10px">{{mqEmoji}}</div>
+                <div style="font-weight:800;font-size:20px">{{mqResultado}}</div>
+                <div style="color:#8b84a3;font-size:14px;margin-top:6px">Mini-quiz concluído — a lição ficou marcada como feita.</div>
+                <div onClick="{{mqRecomecar}}" style="margin-top:18px;display:inline-flex;align-items:center;gap:6px;border:1px solid #2dd4bf;color:#2dd4bf;border-radius:11px;padding:11px 22px;font-weight:700;font-size:13.5px;cursor:pointer">{{resetIcon}} Repetir mini-quiz</div>
+              </div>
+            </sc-if>
+          </sc-if>
+          <div style="height:1px;background:#2a3a52;margin:22px 0 16px"></div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+            <sc-if value="{{temAnterior}}" hint-placeholder-val="{{false}}"><div onClick="{{licaoAnterior}}" style="border:1px solid #2a3a52;color:#2dd4bf;border-radius:11px;padding:11px 18px;font-weight:600;font-size:13.5px;cursor:pointer">{{backIcon}} Lição anterior</div></sc-if>
+            <div style="flex:1"></div>
+            <sc-if value="{{podeConcluir}}" hint-placeholder-val="{{false}}"><div onClick="{{concluirLicao}}" style="background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.45);color:#34d399;border-radius:11px;padding:11px 18px;font-weight:700;font-size:13.5px;cursor:pointer">{{checkIcon}} Concluir lição</div></sc-if>
+            <sc-if value="{{temProxima}}" hint-placeholder-val="{{false}}"><div onClick="{{licaoProxima}}" style="background:linear-gradient(135deg,#2dd4bf,#0d9488);border-radius:11px;padding:11px 18px;font-weight:700;font-size:13.5px;cursor:pointer;box-shadow:0 4px 16px rgba(45,212,191,.28)">{{nextIcon}} Próxima lição</div></sc-if>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{vPratica}}" hint-placeholder-val="{{false}}">
+    <div style="max-width:980px;margin:0 auto;padding:88px 20px 110px;animation:fadeUp .35s ease">
+      <sc-if value="{{arenaMapa}}" hint-placeholder-val="{{true}}">
+        <h1 style="margin:0;font-size:26px;font-weight:800">Arena dos Bosses</h1>
+        <p style="margin:6px 0 0;color:#8b9bb4;font-size:14px">Acerta = dano · Erra = o boss ataca e regenera vida · Derrota cada boss para desbloquear o seguinte · Sem ajuda = loot.</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;margin-top:22px">
+          <sc-for list="{{listaBosses}}" as="b" hint-placeholder-count="8">
+            <div onClick="{{b.abrir}}" class="mp-card" style="{{b.cardStyle}}">
+              <div style="height:86px;background:{{b.grad}};display:flex;align-items:center;justify-content:center;color:#fff;position:relative">
+                {{b.icone}}
+                <sc-if value="{{b.morto}}" hint-placeholder-val="{{false}}"><span style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,.45);border-radius:999px;padding:4px 10px;font-size:11px;font-weight:800;color:#4ade80">DERROTADO</span></sc-if>
+                <sc-if value="{{b.bloqueado}}" hint-placeholder-val="{{false}}"><span style="position:absolute;inset:0;background:rgba(11,18,32,.55);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;padding:8px;text-align:center">{{b.lockTxt}}</span></sc-if>
+              </div>
+              <div style="padding:14px 16px 16px">
+                <div style="font-size:11.5px;color:#2dd4bf;font-weight:700;text-transform:uppercase;letter-spacing:.06em">{{b.titulo}}</div>
+                <div style="font-weight:800;font-size:16px;margin-top:4px">{{b.nome}}</div>
+                <div style="font-size:12.5px;color:#8b9bb4;margin-top:6px;line-height:1.45">{{b.lore}}</div>
+                <div style="display:flex;justify-content:space-between;margin-top:12px;font-size:12px;font-weight:700;color:#8b9bb4">
+                  <span>HP {{b.hp}}</span>
+                  <span style="color:#fbbf24">Drop: {{b.dropNome}}</span>
+                </div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{arenaCombate}}" hint-placeholder-val="{{false}}">
+        <div class="mp-arena-top">
+          <div onClick="{{fugirBoss}}" style="color:#38bdf8;font-size:13.5px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px">{{backIcon}} Fugir</div>
+          <div class="mp-arena-live"><i></i> Farm session</div>
+          <div style="font-size:12px;color:#8b9bb4;font-weight:600">{{combateAjudaTxt}}</div>
+        </div>
+
+        <div class="{{combatPanelClass}} mp-arena-stage">
+          <div class="mp-arena-fx">
+            <div class="beam"></div>
+            <div class="ember"></div><div class="ember"></div><div class="ember"></div>
+            <div class="ember"></div><div class="ember"></div><div class="ember"></div>
+            <div class="spark"></div><div class="spark"></div>
+          </div>
+          <div class="{{slashFullClass}}"></div>
+          <div class="mp-arena-inner">
+            <div class="mp-fighters">
+              <div class="mp-fighter boss">
+                <div style="position:relative">
+                  <div class="mp-aura"></div>
+                  <div class="{{bossAvatarFullClass}} mp-portrait" style="background:{{bossGrad}}">{{bossIconeBig}}</div>
+                </div>
+                <div class="mp-hp-block">
+                  <div class="mp-sub-tag" style="color:#fb7185">{{bossTitulo}}</div>
+                  <div class="mp-name-tag">{{bossNome}}</div>
+                  <div class="mp-hp-label"><span style="color:#fb7185">HP</span><span style="color:#e8eef7">{{bossHpTxt}}</span></div>
+                  <div class="mp-hp big"><i style="{{bossHpBar}}"></i></div>
+                </div>
+              </div>
+              <div class="mp-vs">VS</div>
+              <div class="mp-fighter player {{playerHudFullClass}}">
+                <div style="position:relative">
+                  <div class="mp-aura"></div>
+                  <div class="mp-portrait player-p">{{inicial}}</div>
+                </div>
+                <div class="mp-hp-block">
+                  <div class="mp-sub-tag" style="color:#5eead4">Herói</div>
+                  <div class="mp-name-tag">{{nome}}</div>
+                  <div class="mp-hp-label"><span style="color:#4ade80">HP</span><span style="color:#e8eef7">{{gHpTxt}}</span></div>
+                  <div class="mp-hp big"><i style="{{gHpBar}}"></i></div>
+                  <div class="{{xpHudFullClass}}" style="font-size:11.5px;color:#fbbf24;font-weight:700;margin-top:8px;text-shadow:0 0 12px rgba(251,191,36,.45)">Nv. {{gNivel}} · {{gXpTxt}}</div>
+                </div>
+              </div>
+            </div>
+            <div class="mp-battle-log">{{combateLogLinha}}</div>
+            <sc-if value="{{temDmgFloat}}" hint-placeholder-val="{{false}}"><div class="mp-dmg" style="{{dmgFloatStyle}}">{{dmgFloatTxt}}</div></sc-if>
+          </div>
+        </div>
+
+        <sc-if value="{{combateAtivo}}" hint-placeholder-val="{{false}}">
+          <sc-if value="{{temAjudasBar}}" hint-placeholder-val="{{false}}">
+            <div class="mp-aids">
+              <div style="font-size:11px;font-weight:800;color:#fbbf24;text-transform:uppercase;letter-spacing:.06em;align-self:center;margin-right:4px">Itens</div>
+              <sc-for list="{{ajudasCombate}}" as="it" hint-placeholder-count="3">
+                <div onClick="{{it.usar}}" class="mp-aid-chip" style="{{it.style}}" style-hover="border-color:#fbbf24">{{it.rot}}</div>
+              </sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{temAjudaAtiva}}" hint-placeholder-val="{{false}}">
+            <div style="background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.35);color:#fbbf24;border-radius:12px;padding:12px 14px;margin-bottom:12px;font-size:13.5px;line-height:1.5">{{ajudaAtivaTxt}}</div>
+          </sc-if>
+          <sc-if value="{{temPergunta}}" hint-placeholder-val="{{false}}">
+            <div class="mp-attack-shell">
+            <div class="mp-q-card mp-attack-panel">
+              <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:6px 0 14px">
+                <span style="background:rgba(45,212,191,.12);border:1px solid rgba(45,212,191,.28);color:#2dd4bf;border-radius:999px;padding:4px 12px;font-size:12px;font-weight:700">{{qTema}}</span>
+                <span style="{{qDifStyle}}">{{qDif}}</span>
+                <span style="font-size:12px;color:#fbbf24;font-weight:700">+{{qXp}} XP</span>
+              </div>
+              <div style="font-size:17.5px;line-height:1.65;color:#fff;margin-bottom:18px;overflow-wrap:anywhere">{{qCorpo}}</div>
+              <div style="display:flex;flex-direction:column;gap:9px">
+                <sc-for list="{{qOps}}" as="o" hint-placeholder-count="4">
+                  <div onClick="{{o.escolher}}" class="mp-opt" style="{{o.style}}" style-hover="border-color:#2dd4bf">
+                    <span style="{{o.letraStyle}}">{{o.letra}}</span><span style="flex:1;overflow-wrap:anywhere">{{o.c}}</span>
+                  </div>
+                </sc-for>
+              </div>
+              <sc-if value="{{qRespondida}}" hint-placeholder-val="{{false}}">
+                <div style="{{qFeedStyle}}">
+                  <div style="font-weight:800;font-size:15px;margin-bottom:8px">{{qFeedTitulo}}</div>
+                  <sc-if value="{{qErro}}" hint-placeholder-val="{{false}}">
+                    <div style="margin:12px 0;padding:14px;border-radius:12px;background:rgba(251,113,133,.08);border:1px solid rgba(251,113,133,.3)">
+                      <div style="font-size:11.5px;font-weight:800;color:#fb7185;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Aura drain</div>
+                      <div style="color:#fecdd3;font-size:14px;line-height:1.55;margin-bottom:10px;overflow-wrap:anywhere">{{qErroPorque}}</div>
+                      <div style="font-size:11.5px;font-weight:800;color:#fbbf24;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Como farmar isto</div>
+                      <div style="color:#fde68a;font-size:14px;line-height:1.55;overflow-wrap:anywhere">{{qErroDica}}</div>
+                      <div onClick="{{abrirVideoErro}}" style="margin-top:12px;display:inline-flex;align-items:center;gap:8px;background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.4);color:#fbbf24;border-radius:10px;padding:10px 14px;font-weight:700;font-size:13px;cursor:pointer">{{playIcon}} Farm aura no vídeo · {{qVideoTitulo}}</div>
+                      <div style="font-size:11.5px;color:#8b9bb4;margin-top:6px">Sandro Curió · Dicasdemat</div>
+                    </div>
+                  </sc-if>
+                  <div style="font-size:11.5px;font-weight:700;color:#2dd4bf;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">Resolução</div>
+                  <sc-for list="{{qPassos}}" as="s" hint-placeholder-count="2">
+                    <div style="display:flex;gap:10px;margin-bottom:7px"><span style="color:#2dd4bf;font-weight:800;font-size:13px">{{s.n}}.</span><span style="color:#cfc8e6;font-size:14.5px;line-height:1.6;flex:1;overflow-wrap:anywhere">{{s.c}}</span></div>
+                  </sc-for>
+                </div>
+                <div onClick="{{proximaPergunta}}" class="mp-continue-btn">Continuar a farmar {{nextIcon}}</div>
+              </sc-if>
+            </div>
+            </div>
+          </sc-if>
+        </sc-if>
+
+        <sc-if value="{{combateVitoria}}" hint-placeholder-val="{{false}}">
+          <div class="mp-victory" style="background:linear-gradient(160deg,#182338,#121c2e);border:1px solid rgba(45,212,191,.4);border-radius:18px;padding:32px;text-align:center;margin-top:8px">
+            <div class="mp-float" style="font-size:48px;color:#2dd4bf;margin-bottom:10px">{{celebrateIcon}}</div>
+            <div style="font-weight:800;font-size:24px">{{vitoriaTitulo}}</div>
+            <div style="color:#8b9bb4;margin-top:8px;font-size:14.5px;line-height:1.55">{{vitoriaTxt}}</div>
+            <div onClick="{{voltarMapaBoss}}" class="mp-continue-btn" style="display:inline-block;padding:12px 28px;margin-top:20px">Voltar ao mapa</div>
+          </div>
+        </sc-if>
+        <sc-if value="{{combateDerrota}}" hint-placeholder-val="{{false}}">
+          <div class="mp-defeat" style="background:#121c2e;border:1px solid rgba(251,113,133,.4);border-radius:18px;padding:32px;text-align:center;margin-top:8px">
+            <div style="font-weight:800;font-size:24px;color:#fb7185">{{derrotaTitulo}}</div>
+            <div style="color:#8b9bb4;margin-top:8px;font-size:14.5px">{{derrotaTxt}}</div>
+            <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:20px">
+              <div onClick="{{retryBoss}}" class="mp-continue-btn" style="padding:12px 22px;margin:0">Tentar de novo</div>
+              <div onClick="{{voltarMapaBoss}}" style="border:1px solid #2a3a52;border-radius:12px;padding:12px 22px;font-weight:700;cursor:pointer">Mapa</div>
+            </div>
+          </div>
+        </sc-if>
+      </sc-if>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{vInventario}}" hint-placeholder-val="{{false}}">
+    <div style="max-width:900px;margin:0 auto;padding:88px 20px 110px;animation:fadeUp .35s ease">
+      <h1 style="margin:0;font-size:26px;font-weight:800">Inventário</h1>
+      <p style="margin:6px 0 0;color:#8b9bb4;font-size:14px">Itens de ajuda leve. Se usares algum durante um combate, esse boss não larga loot.</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-top:20px">
+        <sc-for list="{{listaItens}}" as="it" hint-placeholder-count="4">
+          <div class="mp-inv-item" style="background:#121c2e;border:1px solid #2a3a52;border-radius:14px;padding:16px;transition:transform .25s ease,border-color .25s ease" style-hover="transform:translateY(-3px);border-color:#fbbf24">
+            <div style="display:flex;gap:10px;align-items:center;margin-bottom:8px">
+              <div class="mp-icon-orb">{{it.ic}}</div>
+              <div>
+                <div style="font-weight:800">{{it.nome}}</div>
+                <div style="font-size:12px;color:#fbbf24;font-weight:700">× {{it.qtd}}</div>
+              </div>
+            </div>
+            <div style="font-size:13px;color:#8b9bb4;line-height:1.45">{{it.desc}}</div>
+            <div style="font-size:11.5px;color:#6b6480;margin-top:8px;text-transform:uppercase;letter-spacing:.06em;font-weight:700">{{it.raridade}}</div>
+          </div>
+        </sc-for>
+      </div>
+      <sc-if value="{{invVazio}}" hint-placeholder-val="{{false}}">
+        <div class="empty" style="margin-top:24px;padding:32px;text-align:center;color:#8b9bb4;background:#121c2e;border:1px solid #2a3a52;border-radius:16px">Ainda sem itens. Derrota bosses na Arena sem usar ajudas para os ganhar.</div>
+      </sc-if>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{vAprender}}" hint-placeholder-val="{{false}}">
+    <div style="max-width:1120px;margin:0 auto;padding:88px 20px 110px;animation:fadeUp .35s ease">
+      <sc-if value="{{aprLista}}" hint-placeholder-val="{{true}}">
+        <h1 style="margin:0;font-size:26px;font-weight:800">Campo de treino</h1>
+        <p style="margin:6px 0 0;color:#8b9bb4;font-size:14px">Estuda antes do combate: resumo + vídeo. Depois desafia o boss da zona na Arena.</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:14px;margin-top:22px">
+          <sc-for list="{{aprTemas}}" as="a" hint-placeholder-count="8">
+            <div onClick="{{a.abrir}}" class="mp-card" style="background:#121c2e;border:1px solid #2a3a52;border-radius:16px;overflow:hidden;cursor:pointer">
+              <div style="height:88px;background:{{a.grad}};display:flex;align-items:center;justify-content:center;color:#fff">{{a.icone}}</div>
+              <div style="padding:15px 16px 16px">
+                <div style="display:flex;gap:6px;align-items:center;margin-bottom:8px"><span style="{{a.difStyle}}">{{a.dif}}</span><span style="font-size:11.5px;color:#8b9bb4">{{a.dur}}</span></div>
+                <div style="font-weight:700;font-size:15px;line-height:1.35">{{a.titulo}}</div>
+                <div style="font-size:12.5px;color:#8b9bb4;margin-top:8px;line-height:1.45">{{a.desc}}</div>
+                <div style="margin-top:12px;display:inline-flex;align-items:center;gap:6px;color:#2dd4bf;font-size:12.5px;font-weight:700">{{playIcon}} Ver vídeo-aula</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+      <sc-if value="{{aprDetalhe}}" hint-placeholder-val="{{false}}">
+        <div onClick="{{aprVoltar}}" style="color:#38bdf8;font-size:13.5px;font-weight:600;cursor:pointer;margin-bottom:14px;display:inline-flex;align-items:center;gap:6px">{{backIcon}} Todos os temas</div>
+        <div style="background:#121c2e;border:1px solid #2a3a52;border-radius:18px;padding:24px;display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap">
+          <div style="width:64px;height:64px;border-radius:16px;background:{{aprGrad}};display:flex;align-items:center;justify-content:center;flex-shrink:0">{{aprIcone}}</div>
+          <div style="flex:1;min-width:240px">
+            <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px"><span style="{{aprDifStyle}}">{{aprDif}}</span></div>
+            <h1 style="margin:0;font-size:22px;font-weight:800">{{aprTitulo}}</h1>
+            <p style="margin:8px 0 0;color:#8b9bb4;font-size:14px;line-height:1.55">{{aprDesc}}</p>
+          </div>
+          <div onClick="{{aprAbrirCurso}}" style="background:linear-gradient(135deg,#2dd4bf,#0d9488);border-radius:12px;padding:12px 20px;font-weight:700;font-size:13.5px;cursor:pointer;box-shadow:0 4px 18px rgba(45,212,191,.28)">Abrir curso completo</div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:16px;margin-top:16px">
+          <div style="flex:1.1 1 320px;background:#121c2e;border:1px solid #2a3a52;border-radius:16px;padding:22px">
+            <div style="font-size:11.5px;font-weight:700;color:#2dd4bf;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px">Resumo da matéria</div>
+            <sc-for list="{{aprParas}}" as="p" hint-placeholder-count="3">
+              <p style="color:#cfc8e6;font-size:14.5px;line-height:1.75;margin:0 0 14px">{{p.c}}</p>
+            </sc-for>
+          </div>
+          <div style="flex:1 1 300px;background:#121c2e;border:1px solid #2a3a52;border-radius:16px;padding:22px">
+            <div style="font-size:11.5px;font-weight:700;color:#2dd4bf;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">{{playIcon}} Vídeo-aula</div>
+            <div style="font-weight:700;font-size:15px">{{aprVideoTitulo}}</div>
+            <div style="font-size:12.5px;color:#8b9bb4;margin-top:3px;margin-bottom:12px">{{aprVideoCanal}}</div>
+            {{aprVideoEmbed}}
+            <div onClick="{{aprAbrirYt}}" style="margin-top:12px;display:inline-flex;align-items:center;gap:8px;border:1px solid #2a3a52;color:#38bdf8;border-radius:10px;padding:10px 14px;font-weight:700;font-size:13px;cursor:pointer">{{extIcon}} Abrir no YouTube</div>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{vMateriais}}" hint-placeholder-val="{{false}}">
+    <div style="max-width:1000px;margin:0 auto;padding:88px 20px 110px;animation:fadeUp .35s ease">
+      <h1 style="margin:0;font-size:26px;font-weight:800">Materiais do curso</h1>
+      <p style="margin:6px 0 0;color:#8b84a3;font-size:14px">Teoria, fichas e exames — cada material tem uma vídeo-aula ligada ao tema.</p>
+      <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:18px">
+        <sc-for list="{{filtrosMat}}" as="fm" hint-placeholder-count="5">
+          <div onClick="{{fm.escolher}}" style="{{fm.style}}" style-hover="border-color:#2dd4bf">{{fm.rot}}</div>
+        </sc-for>
+      </div>
+      <sc-if value="{{matDetalhe}}" hint-placeholder-val="{{false}}">
+        <div style="background:#121c2e;border:1px solid #2a3a52;border-radius:16px;padding:22px;margin-top:18px">
+          <div onClick="{{matFechar}}" style="color:#38bdf8;font-size:13px;font-weight:600;cursor:pointer;margin-bottom:12px;display:inline-flex;align-items:center;gap:6px">{{backIcon}} Voltar à lista</div>
+          <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+            <span style="{{matTagStyle}}">{{matTipoRot}}</span>
+            <span style="font-size:12.5px;color:#8b9bb4">{{matTemaRot}}</span>
+          </div>
+          <h2 style="margin:0 0 6px;font-size:18px;font-weight:800">{{matTitulo}}</h2>
+          <div style="font-size:12.5px;color:#6b6480;margin-bottom:16px">{{fileIcon}} {{matFicheiro}}</div>
+          <div style="font-size:11.5px;font-weight:700;color:#2dd4bf;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">{{playIcon}} Vídeo ligado a este material</div>
+          <div style="font-weight:700;font-size:15px">{{matVideoTitulo}}</div>
+          <div style="font-size:12.5px;color:#8b9bb4;margin-top:3px;margin-bottom:12px">{{matVideoCanal}}</div>
+          {{matVideoEmbed}}
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
+            <div onClick="{{matAbrirYt}}" style="display:inline-flex;align-items:center;gap:8px;border:1px solid #2a3a52;color:#38bdf8;border-radius:10px;padding:10px 14px;font-weight:700;font-size:13px;cursor:pointer">{{extIcon}} Abrir no YouTube</div>
+            <sc-if value="{{matTemTema}}" hint-placeholder-val="{{false}}">
+              <div onClick="{{matIrAprender}}" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#2dd4bf,#0d9488);border-radius:10px;padding:10px 14px;font-weight:700;font-size:13px;cursor:pointer">Estudar este tema</div>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-top:18px">
+        <sc-for list="{{listaMateriais}}" as="m" hint-placeholder-count="8">
+          <div onClick="{{m.abrir}}" class="mp-card" style="background:#121c2e;border:1px solid #2a3a52;border-radius:14px;padding:16px 18px;cursor:pointer">
+            <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+              <span style="font-size:20px">{{m.ic}}</span>
+              <span style="{{m.tagStyle}}">{{m.tipoRot}}</span>
+            </div>
+            <div style="font-weight:700;font-size:14px;line-height:1.4;color:#e9e4f5">{{m.titulo}}</div>
+            <div style="font-size:12px;color:#6b6480;margin-top:6px">{{m.temaRot}}</div>
+            <div style="margin-top:10px;display:inline-flex;align-items:center;gap:6px;color:#2dd4bf;font-size:12px;font-weight:700">{{playIcon}} {{m.videoHint}}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{vExame}}" hint-placeholder-val="{{false}}">
+    <sc-if value="{{exIntro}}" hint-placeholder-val="{{false}}">
+      <div style="max-width:640px;margin:0 auto;padding:110px 20px;animation:fadeUp .35s ease">
+        <div style="background:linear-gradient(160deg,#182338,#121c2e 55%);border:1px solid #2a3a52;border-radius:22px;padding:38px 34px;text-align:center;box-shadow:0 10px 50px rgba(45,212,191,.12)">
+          <div style="font-size:54px;color:#38bdf8">{{examIntroIcon}}</div>
+          <div style="display:inline-block;background:rgba(45,212,191,.14);border:1px solid rgba(45,212,191,.3);color:#2dd4bf;border-radius:999px;padding:5px 14px;font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;margin-top:12px">Certificação final</div>
+          <h1 style="margin:14px 0 8px;font-size:26px;font-weight:800">Exame Final — Simulação</h1>
+          <p style="color:#8b84a3;font-size:14.5px;line-height:1.6;margin:0">Simulação nas condições reais do exame de Tópicos de Matemática.</p>
+          <div style="text-align:left;background:#121c2e;border:1px solid #2a3a52;border-radius:14px;padding:16px 20px;margin:22px 0;display:flex;flex-direction:column;gap:9px;font-size:14px;color:#cfc8e6">
+            <div>{{timerIcon}} <b>{{exMinutos}} minutos</b> com cronómetro</div>
+            <div>{{listChecksIcon}} <b>Grupo I</b> — 8 perguntas de escolha múltipla (12 valores)</div>
+            <div>{{penIcon}} <b>Grupo II</b> — 3 perguntas de desenvolvimento com autoavaliação (8 valores)</div>
+            <div>{{gridIcon}} Grelha de navegação — podes voltar atrás e mudar respostas</div>
+            <div>{{awardIcon}} Nota final na escala de <b>0 a 20 valores</b></div>
+          </div>
+          <sc-if value="{{temMelhorNota}}" hint-placeholder-val="{{false}}"><div style="color:#2dd4bf;font-size:13px;margin-bottom:16px">A tua melhor nota até agora: <b>{{melhorNota}} valores</b></div></sc-if>
+          <div onClick="{{iniciarExame}}" style="background:linear-gradient(135deg,#2dd4bf,#0d9488);border-radius:13px;padding:15px;font-weight:800;font-size:16px;cursor:pointer;box-shadow:0 6px 26px rgba(45,212,191,.35)" style-hover="filter:brightness(1.15)">Iniciar exame</div>
+        </div>
+      </div>
+    </sc-if>
+    <sc-if value="{{exDecorrer}}" hint-placeholder-val="{{false}}">
+      <div style="max-width:840px;margin:0 auto;padding:84px 20px 110px;animation:fadeUp .3s ease">
+        <div style="background:#121c2e;border:1px solid #2a3a52;border-radius:16px;padding:14px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+          <div style="{{exTempoStyle}}">{{timerIcon}} {{exTempo}}</div>
+          <div style="flex:1;display:flex;gap:5px;flex-wrap:wrap">
+            <sc-for list="{{exNav}}" as="nq" hint-placeholder-count="11">
+              <div onClick="{{nq.ir}}" style="{{nq.style}}">{{nq.rot}}</div>
+            </sc-for>
+          </div>
+          <div onClick="{{terminarExame}}" style="border:1px solid rgba(239,68,68,.5);color:#f87171;border-radius:10px;padding:8px 15px;font-weight:700;font-size:12.5px;cursor:pointer" style-hover="background:rgba(239,68,68,.1)">Terminar exame</div>
+        </div>
+        <div style="background:#121c2e;border:1px solid #2a3a52;border-radius:16px;padding:24px;margin-top:14px">
+          <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px">
+            <span style="background:rgba(45,212,191,.12);border:1px solid rgba(45,212,191,.28);color:#2dd4bf;border-radius:999px;padding:4px 12px;font-size:12px;font-weight:700">{{exGrupo}}</span>
+            <span style="font-size:13px;color:#8b84a3;font-weight:600">Pergunta {{exNum}} de 11</span>
+          </div>
+          <div style="font-size:17px;line-height:1.65;color:#fff;margin-bottom:18px">{{exCorpo}}</div>
+          <sc-if value="{{exEhGI}}" hint-placeholder-val="{{false}}">
+            <div style="display:flex;flex-direction:column;gap:9px">
+              <sc-for list="{{exOps}}" as="o" hint-placeholder-count="4">
+                <div onClick="{{o.escolher}}" style="{{o.style}}" style-hover="border-color:#2dd4bf"><span style="{{o.letraStyle}}">{{o.letra}}</span><span style="flex:1">{{o.c}}</span></div>
+              </sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{exEhGII}}" hint-placeholder-val="{{false}}">
+            <textarea value="{{exTexto}}" onChange="{{exEscrever}}" placeholder="Escreve aqui a tua resolução…" style="width:100%;min-height:150px;background:#182338;border:1px solid #2a3a52;border-radius:13px;padding:14px 16px;color:#e9e4f5;font-size:14.5px;line-height:1.6;resize:vertical;outline:none" style-focus="border-color:#2dd4bf"></textarea>
+            <div style="color:#8b9bb4;font-size:12.5px;margin-top:8px">{{penIcon}} Esta pergunta é corrigida no final por autoavaliação, comparando com a resolução oficial.</div>
+          </sc-if>
+          <div style="display:flex;gap:10px;margin-top:20px">
+            <sc-if value="{{exTemAnt}}" hint-placeholder-val="{{false}}"><div onClick="{{exAnterior}}" style="border:1px solid #2a3a52;color:#2dd4bf;border-radius:11px;padding:11px 18px;font-weight:600;font-size:13.5px;cursor:pointer">{{backIcon}} Anterior</div></sc-if>
+            <div style="flex:1"></div>
+            <sc-if value="{{exTemProx}}" hint-placeholder-val="{{false}}"><div onClick="{{exProxima}}" style="background:linear-gradient(135deg,#2dd4bf,#0d9488);border-radius:11px;padding:11px 20px;font-weight:700;font-size:13.5px;cursor:pointer">{{nextIcon}} Próxima</div></sc-if>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+    <sc-if value="{{exCorrecao}}" hint-placeholder-val="{{false}}">
+      <div style="max-width:840px;margin:0 auto;padding:88px 20px 110px;animation:fadeUp .3s ease">
+        <h1 style="margin:0 0 6px;font-size:25px;font-weight:800">Correção do exame</h1>
+        <p style="color:#8b84a3;font-size:14px;margin:0 0 20px">Grupo I corrigido automaticamente. No Grupo II, compara a tua resposta com a resolução e autoavalia-te.</p>
+        <h2 style="font-size:16px;font-weight:800;color:#2dd4bf;margin:18px 0 12px">Grupo I — Escolha múltipla</h2>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <sc-for list="{{corGI}}" as="cq" hint-placeholder-count="8">
+            <div style="{{cq.style}}">
+              <div style="display:flex;gap:10px;align-items:baseline;margin-bottom:8px"><span style="font-weight:800;color:#2dd4bf;font-size:13px">{{cq.n}}.</span><div style="flex:1;font-size:15px;line-height:1.6">{{cq.corpo}}</div><span style="{{cq.tagStyle}}">{{cq.tag}}</span></div>
+              <div style="font-size:13.5px;color:#cfc8e6;margin-left:24px">A tua resposta: <b>{{cq.tua}}</b> · Correta: <b style="color:#4ade80">{{cq.certa}}</b></div>
+            </div>
+          </sc-for>
+        </div>
+        <h2 style="font-size:16px;font-weight:800;color:#2dd4bf;margin:26px 0 12px">Grupo II — Desenvolvimento (autoavaliação)</h2>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <sc-for list="{{corGII}}" as="ca" hint-placeholder-count="3">
+            <div style="background:#121c2e;border:1px solid #2a3a52;border-radius:15px;padding:18px 20px">
+              <div style="display:flex;gap:10px;align-items:baseline;margin-bottom:10px"><span style="font-weight:800;color:#2dd4bf;font-size:13px">{{ca.n}}.</span><div style="flex:1;font-size:15px;line-height:1.6">{{ca.corpo}}</div></div>
+              <div style="background:#182338;border:1px solid #2a3a52;border-radius:11px;padding:12px 14px;margin-bottom:10px"><div style="font-size:11px;font-weight:700;color:#8b84a3;text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px">A tua resposta</div><div style="font-size:14px;color:#cfc8e6;line-height:1.6;white-space:pre-wrap">{{ca.resposta}}</div></div>
+              <div style="background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.3);border-radius:11px;padding:12px 14px"><div style="font-size:11px;font-weight:700;color:#4ade80;text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px">Resolução oficial</div><div style="font-size:14px;color:#cfc8e6;line-height:1.7">{{ca.res}}</div></div>
+              <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;align-items:center">
+                <span style="font-size:12.5px;color:#8b84a3;font-weight:600">Como te avalias?</span>
+                <sc-for list="{{ca.botoes}}" as="b" hint-placeholder-count="3">
+                  <div onClick="{{b.escolher}}" style="{{b.style}}" style-hover="border-color:#2dd4bf">{{b.rot}}</div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+        <div onClick="{{verResultado}}" style="{{verResultadoStyle}}" style-hover="filter:brightness(1.12)">{{verResultadoRot}}</div>
+      </div>
+    </sc-if>
+    <sc-if value="{{exResultado}}" hint-placeholder-val="{{false}}">
+      <div style="max-width:600px;margin:0 auto;padding:110px 20px;animation:fadeUp .35s ease">
+        <div style="background:linear-gradient(160deg,#182338,#121c2e 55%);border:2px solid #0d9488;border-radius:24px;padding:40px 34px;text-align:center;box-shadow:0 14px 60px rgba(45,212,191,.2)">
+          <div style="font-size:12px;font-weight:800;color:#2dd4bf;text-transform:uppercase;letter-spacing:.16em">MatPrep · Tópicos de Matemática</div>
+          <div style="font-size:52px;margin:14px 0 6px;color:#fbbf24">{{resEmoji}}</div>
+          <div style="font-weight:800;font-size:20px">Simulação de Exame Concluída</div>
+          <div style="font-size:64px;font-weight:900;letter-spacing:-0.03em;margin:14px 0 2px;background:linear-gradient(135deg,#2dd4bf,#38bdf8);-webkit-background-clip:text;background-clip:text;color:transparent">{{resNota}}</div>
+          <div style="color:#8b84a3;font-size:14px;font-weight:600">valores (0–20)</div>
+          <div style="{{resLabelStyle}}">{{resLabel}}</div>
+          <div style="display:flex;gap:10px;justify-content:center;margin:22px 0;flex-wrap:wrap">
+            <div style="background:#121c2e;border:1px solid #2a3a52;border-radius:12px;padding:12px 18px"><div style="font-weight:800;font-size:16px;color:#2dd4bf">{{resGI}}</div><div style="font-size:11.5px;color:#8b84a3">Grupo I · 12 val.</div></div>
+            <div style="background:#121c2e;border:1px solid #2a3a52;border-radius:12px;padding:12px 18px"><div style="font-weight:800;font-size:16px;color:#2dd4bf">{{resGII}}</div><div style="font-size:11.5px;color:#8b84a3">Grupo II · 8 val.</div></div>
+            <div style="background:#121c2e;border:1px solid #2a3a52;border-radius:12px;padding:12px 18px"><div style="font-weight:800;font-size:16px;color:#2dd4bf">{{resTempo}}</div><div style="font-size:11.5px;color:#8b84a3">tempo usado</div></div>
+          </div>
+          <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+            <div onClick="{{voltarCorrecao}}" style="border:1px solid #2dd4bf;color:#2dd4bf;border-radius:12px;padding:12px 20px;font-weight:700;font-size:13.5px;cursor:pointer" style-hover="background:rgba(45,212,191,.1)">Rever correção</div>
+            <div onClick="{{sairExame}}" style="background:linear-gradient(135deg,#2dd4bf,#0d9488);border-radius:12px;padding:12px 22px;font-weight:700;font-size:13.5px;cursor:pointer;box-shadow:0 4px 18px rgba(45,212,191,.3)" style-hover="filter:brightness(1.15)">Voltar ao início</div>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+  </sc-if>
+
+  <sc-if value="{{vProg}}" hint-placeholder-val="{{false}}">
+    <div style="max-width:1000px;margin:0 auto;padding:88px 20px 110px;animation:fadeUp .35s ease">
+      <div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:22px">
+        <div style="width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,#2dd4bf,#0d9488);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:28px;border:3px solid #2a3a52;box-shadow:0 0 24px rgba(45,212,191,.28)">{{inicial}}</div>
+        <div style="flex:1;min-width:200px">
+          <h1 style="margin:0;font-size:24px;font-weight:800">{{nome}}</h1>
+          <div style="color:#8b84a3;font-size:13.5px;margin-top:3px">Nível {{gNivel}} · {{gXpTxt}} · MatPrep Arena</div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <div style="background:#121c2e;border:1px solid #2a3a52;border-radius:12px;padding:10px 16px;text-align:center"><div style="font-weight:800;font-size:17px;color:#fbbf24">Nv. {{gNivel}}</div><div style="font-size:11px;color:#8b9bb4">nível</div></div>
+          <div style="background:#121c2e;border:1px solid #2a3a52;border-radius:12px;padding:10px 16px;text-align:center"><div style="font-weight:800;font-size:17px;color:#fb7185">{{gVitorias}}</div><div style="font-size:11px;color:#8b84a3">bosses</div></div>
+          <div style="background:#121c2e;border:1px solid #2a3a52;border-radius:12px;padding:10px 16px;text-align:center"><div style="font-weight:800;font-size:17px;color:#2dd4bf">{{precisaoGlobal}}</div><div style="font-size:11px;color:#8b84a3">precisão</div></div>
+          <div style="background:#121c2e;border:1px solid #2a3a52;border-radius:12px;padding:10px 16px;text-align:center"><div style="font-weight:800;font-size:17px;color:#fbbf24">{{streakIcon}} {{streak}}</div><div style="font-size:11px;color:#8b9bb4">streak</div></div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px">
+        <div style="background:#121c2e;border:1px solid #2a3a52;border-radius:16px;padding:20px">
+          <div style="font-weight:800;font-size:15px;margin-bottom:14px">{{evolutionIcon}} Evolução nos exames</div>
+          <sc-if value="{{temExames}}" hint-placeholder-val="{{false}}">
+            <div style="display:flex;align-items:flex-end;gap:10px;height:130px;padding:0 4px">
+              <sc-for list="{{evolucao}}" as="ev" hint-placeholder-count="3">
+                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end">
+                  <div style="font-size:12px;font-weight:800;color:#2dd4bf">{{ev.nota}}</div>
+                  <div style="{{ev.barra}}"></div>
+                  <div style="font-size:10.5px;color:#6b6480">{{ev.rot}}</div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{semExames}}" hint-placeholder-val="{{false}}"><div style="color:#6b6480;font-size:13.5px;padding:30px 0;text-align:center">Ainda não fizeste nenhuma simulação de exame.</div></sc-if>
+        </div>
+        <div style="background:#121c2e;border:1px solid #2a3a52;border-radius:16px;padding:20px">
+          <div style="font-weight:800;font-size:15px;margin-bottom:14px">{{performanceIcon}} Desempenho por tema</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <sc-for list="{{temaBarras}}" as="tb" hint-placeholder-count="8">
+              <div style="display:flex;align-items:center;gap:10px">
+                <span style="font-size:14px;width:22px">{{tb.icone}}</span>
+                <div style="flex:1"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#cfc8e6;font-weight:600">{{tb.titulo}}</span><span style="{{tb.pctStyle}}">{{tb.pct}}</span></div>
+                <div style="height:6px;background:#2a3a52;border-radius:99px"><div style="{{tb.barra}}"></div></div></div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="background:#121c2e;border:1px solid #2a3a52;border-radius:16px;padding:20px">
+          <div style="font-weight:800;font-size:15px;margin-bottom:14px">{{statsIcon}} Estatísticas</div>
+          <div style="display:flex;flex-direction:column;gap:12px;font-size:14px">
+            <div style="display:flex;justify-content:space-between"><span style="color:#8b84a3">HP atual</span><b style="color:#fb7185">{{gHpTxt}}</b></div>
+            <div style="display:flex;justify-content:space-between"><span style="color:#8b84a3">Itens no inventário</span><b style="color:#fbbf24">{{nItens}}</b></div>
+            <div style="display:flex;justify-content:space-between"><span style="color:#8b84a3">Bosses derrotados</span><b style="color:#2dd4bf">{{gVitorias}}</b></div>
+            <div style="display:flex;justify-content:space-between"><span style="color:#8b84a3">Tempo médio / pergunta</span><b style="color:#2dd4bf">{{tempoMedio}}</b></div>
+            <div style="display:flex;justify-content:space-between"><span style="color:#8b84a3">Melhor sequência</span><b style="color:#2dd4bf">{{maxSeq}}</b></div>
+            <div style="display:flex;justify-content:space-between"><span style="color:#8b84a3">Lições · exames</span><b style="color:#2dd4bf">{{licoesFeitas}} · {{nExames}}</b></div>
+          </div>
+        </div>
+        <div style="background:#121c2e;border:1px solid #2a3a52;border-radius:16px;padding:20px">
+          <div style="font-weight:800;font-size:15px;margin-bottom:14px">{{historyIcon}} Histórico de exames</div>
+          <sc-if value="{{temExames}}" hint-placeholder-val="{{false}}">
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <sc-for list="{{historico}}" as="h" hint-placeholder-count="3">
+                <div style="display:flex;justify-content:space-between;align-items:center;background:#182338;border:1px solid #2a3a52;border-radius:11px;padding:10px 14px">
+                  <span style="font-size:13px;color:#cfc8e6">{{h.data}}</span>
+                  <span style="{{h.notaStyle}}">{{h.nota}} val.</span>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{semExames}}" hint-placeholder-val="{{false}}"><div style="color:#6b6480;font-size:13.5px;padding:30px 0;text-align:center">O teu histórico aparecerá aqui.</div></sc-if>
+        </div>
+      </div>
+      <div style="background:#121c2e;border:1px solid #2a3a52;border-radius:16px;padding:20px;margin-top:16px">
+        <div style="font-weight:800;font-size:15px;margin-bottom:14px">{{achievementsIcon}} Conquistas</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px">
+          <sc-for list="{{conquistas}}" as="cq" hint-placeholder-count="6">
+            <div style="{{cq.style}}">
+              <div style="font-size:26px">{{cq.ic}}</div>
+              <div style="font-weight:700;font-size:12.5px;margin-top:6px">{{cq.t}}</div>
+              <div style="font-size:11px;color:#8b84a3;margin-top:2px;line-height:1.4">{{cq.d}}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ehMobile}}" hint-placeholder-val="{{false}}">
+    <div style="position:fixed;bottom:0;left:0;right:0;background:rgba(13,10,20,.96);backdrop-filter:blur(14px);border-top:1px solid #2a3a52;display:flex;z-index:50;padding:6px 4px calc(6px + env(safe-area-inset-bottom))">
+      <sc-for list="{{navItens}}" as="it" hint-placeholder-count="4">
+        <div onClick="{{it.abrir}}" style="{{it.mStyle}}">
+          <div style="font-size:19px">{{it.ic}}</div>
+          <div style="font-size:10.5px;font-weight:700;margin-top:1px">{{it.rot}}</div>
+        </div>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{levelFlash}}" hint-placeholder-val="{{false}}">
+    <div class="mp-level-flash"></div>
+  </sc-if>
+  <sc-if value="{{toast}}" hint-placeholder-val="{{false}}">
+    <div style="position:fixed;bottom:88px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#2dd4bf,#0d9488);color:#fff;padding:12px 24px;border-radius:12px;font-weight:700;font-size:14px;box-shadow:0 8px 34px rgba(45,212,191,.4);z-index:100;animation:pop .25s ease;white-space:nowrap">{{toast}}</div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;nome&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Estudante&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Perfil&quot;},&quot;minutosExame&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:90,&quot;min&quot;:10,&quot;max&quot;:180,&quot;unit&quot;:&quot;min&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Exame&quot;}}">
+class Component extends DCLogic {
+  state = {view:'home', pesquisa:'', tema:null, licao:0, rev:0, aprTema:null, matSel:null,
+    mq:{i:0,prep:null,sel:null,certas:0,fim:false},
+    q:null, qSel:null, qT:0, filtT:'todos', filtD:'todos', modo:'inteligente', filtMat:'todos', sessao:{t:0,c:0},
+    ex:null, toast:null, w:1100, pronto:false, dmgFloat:null, ajudaHint:null, opsHide:[],
+    hitFx:null, slashOn:false, xpPing:false, levelFlash:false,
+    st:{streak:1,lastDia:null,licoes:{},ultima:null,resp:{t:0,c:0,seq:0,maxSeq:0,tempo:0,porTema:{}},erradas:[],rever:[],hist:{},exames:[],game:null}};
+  TIPOS = [
+    {id:'teoria',t:'Teoria',ic:'book-open',sub:'Leitura · 8 min'},
+    {id:'formulas',t:'Fórmulas',ic:'sigma',sub:'Consulta · 5 min'},
+    {id:'exemplos',t:'Exemplos resolvidos',ic:'pencil',sub:'Passo a passo · 10 min'},
+    {id:'erros',t:'Erros comuns',ic:'alert-triangle',sub:'Leitura · 5 min'},
+    {id:'quiz',t:'Mini-quiz',ic:'target',sub:'4 perguntas · 8 min'}];
+  ic(name,size=18){
+    try{
+      const pascal=name.split('-').map(x=>x.charAt(0).toUpperCase()+x.slice(1)).join('');
+      const iconDef=window.lucide&&(lucide.icons[pascal]||lucide[pascal]);
+      if(!iconDef)return null;
+      const svg=lucide.createElement(iconDef,{width:size,height:size,'stroke-width':1.75,class:'mp-ic'});
+      return React.createElement('span',{className:'mp-ic',style:{width:size,height:size},dangerouslySetInnerHTML:{__html:svg.outerHTML}});
+    }catch(e){return null;}
+  }
+  iconText(name,text,size=15){
+    return React.createElement('span',{style:{display:'inline-flex',alignItems:'center',gap:'6px'}},this.ic(name,size),text);
+  }
+  temaMeta(id){
+    const metas={
+      comb:{icon:'layout-grid',grad:'linear-gradient(135deg,#14b8a6,#0f766e)'},
+      prob:{icon:'dices',grad:'linear-gradient(135deg,#38bdf8,#0369a1)'},
+      func:{icon:'chart-spline',grad:'linear-gradient(135deg,#34d399,#047857)'},
+      explog:{icon:'trending-up',grad:'linear-gradient(135deg,#fbbf24,#b45309)'},
+      trig:{icon:'triangle',grad:'linear-gradient(135deg,#fb7185,#e11d48)'},
+      lim:{icon:'infinity',grad:'linear-gradient(135deg,#22d3ee,#0e7490)'},
+      der:{icon:'activity',grad:'linear-gradient(135deg,#60a5fa,#1d4ed8)'},
+      pg:{icon:'list-ordered',grad:'linear-gradient(135deg,#a3e635,#4d7c0f)'}};
+    return metas[id]||{icon:'book-open',grad:'linear-gradient(135deg,#2dd4bf,#0d9488)'};
+  }
+  refreshIcons(){try{if(window.lucide&&lucide.createIcons)lucide.createIcons({attrs:{'stroke-width':1.75,class:'mp-ic'}});}catch(e){}}
+  ytEmbed(video, opts){
+    if(!video||!video.id)return null;
+    opts=opts||{};
+    const eid='yt_'+video.id+'_'+String(opts.contexto||'x')+'_'+String(opts.materialId||'0');
+    this._ytCtx=this._ytCtx||{};
+    this._ytCtx[eid]={video, contexto:opts.contexto||'teoria', tema:opts.tema||null, materialId:opts.materialId||'', playing:false, lastTick:Date.now()};
+    const origin=encodeURIComponent(location.origin||'http://localhost');
+    return React.createElement('div',{style:{position:'relative',paddingBottom:'56.25%',height:0,overflow:'hidden',borderRadius:'14px',border:'1px solid #2a3a52',background:'#000'}},
+      React.createElement('iframe',{
+        id:eid,
+        src:'https://www.youtube.com/embed/'+video.id+'?enablejsapi=1&origin='+origin+'&rel=0',
+        title:video.titulo||'Vídeo-aula',
+        allow:'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share',
+        allowFullScreen:true,
+        loading:'lazy',
+        referrerPolicy:'strict-origin-when-cross-origin',
+        style:{position:'absolute',top:0,left:0,width:'100%',height:'100%',border:0}
+      })
+    );
+  }
+  explicacaoErro(q, selIdx){
+    const letras='ABCD';
+    const tua=selIdx!=null?letras[selIdx]:'?';
+    const certa=letras[q.c];
+    const tema=(this.D&&this.D.TEMAS.find(t=>t.id===q.tema))||null;
+    const ops=q.ops||[];
+    const tuaTxt=ops[selIdx]!=null?String(ops[selIdx]).replace(/\$/g,''):tua;
+    const certaTxt=ops[q.c]!=null?String(ops[q.c]).replace(/\$/g,''):certa;
+    let porque='Escolheste a opção '+tua+' («'+tuaTxt+'»), mas a correta é a '+certa+' («'+certaTxt+'»).';
+    if(tema&&tema.erros&&tema.erros[0]){
+      porque+=' Erro típico neste tema: '+String(tema.erros[0].e).replace(/\$/g,'');
+    }
+    let dica=(tema&&tema.dicaFacil)||'Revê a ideia principal do tema e segue a resolução passo a passo.';
+    if(q.passos&&q.passos.length){
+      const primeiro=String(q.passos[0]).replace(/\$/g,'');
+      dica='Em poucas palavras: '+primeiro+' '+dica;
+    }
+    const video=(tema&&tema.video)||null;
+    return {porque,dica,video,titulo:video?(video.titulo||'Vídeo Sandro Curió'):'Vídeo'};
+  }
+  abrirYt(video, meta){
+    if(video&&video.id){
+      this.track('video_youtube',{video_id:video.id,tema:(meta&&meta.tema)||null,material_id:(meta&&meta.materialId)||null,meta:{titulo:video.titulo,canal:video.canal,contexto:(meta&&meta.contexto)||'externo'}});
+      window.open('https://www.youtube.com/watch?v='+video.id,'_blank','noopener,noreferrer');
+    }
+  }
+  async track(tipo, payload){
+    payload=payload||{};
+    const sb=this.sbClient(); if(!sb)return;
+    try{
+      if(!this._user)this._user=await this.garantirAuth();
+      if(!this._user)return;
+      const row={
+        user_id:this._user.id,
+        tipo,
+        tema:payload.tema||null,
+        licao:payload.licao||null,
+        questao_id:payload.questao_id||null,
+        material_id:payload.material_id||null,
+        video_id:payload.video_id||null,
+        segundos:payload.segundos||0,
+        meta:payload.meta||{}
+      };
+      const {error}=await sb.from('atividade_eventos').insert(row);
+      if(error)console.warn('track',tipo,error.message);
+      await this.bumpMetricas(tipo, payload);
+    }catch(e){console.warn('track err',e);}
+  }
+  async bumpMetricas(tipo, payload){
+    const sb=this.sbClient(); if(!sb||!this._user)return;
+    payload=payload||{};
+    try{
+      const {data}=await sb.from('aluno_metricas').select('*').eq('user_id',this._user.id).maybeSingle();
+      const m=data||{user_id:this._user.id,perguntas_vistas:0,perguntas_respondidas:0,perguntas_certas:0,segundos_video:0,segundos_estudo:0,licoes_abertas:0,licoes_concluidas:0,materiais_abertos:0,exames_feitos:0,temas_visitados:[]};
+      const temas=Array.isArray(m.temas_visitados)?m.temas_visitados.slice():[];
+      if(payload.tema&&!temas.includes(payload.tema))temas.push(payload.tema);
+      if(tipo==='pergunta_vista')m.perguntas_vistas=(m.perguntas_vistas||0)+1;
+      if(tipo==='pergunta_respondida'){m.perguntas_respondidas=(m.perguntas_respondidas||0)+1; if(payload.meta&&payload.meta.ok)m.perguntas_certas=(m.perguntas_certas||0)+1;}
+      if(tipo==='video_tick'||tipo==='licao_tempo'){
+        if(tipo==='video_tick')m.segundos_video=(m.segundos_video||0)+(payload.segundos||0);
+        if(tipo==='licao_tempo')m.segundos_estudo=(m.segundos_estudo||0)+(payload.segundos||0);
+      }
+      if(tipo==='licao_aberta')m.licoes_abertas=(m.licoes_abertas||0)+1;
+      if(tipo==='licao_concluida')m.licoes_concluidas=(m.licoes_concluidas||0)+1;
+      if(tipo==='material_aberto')m.materiais_abertos=(m.materiais_abertos||0)+1;
+      if(tipo==='exame_fim')m.exames_feitos=(m.exames_feitos||0)+1;
+      m.temas_visitados=temas;
+      m.ultimo_acesso=new Date().toISOString();
+      m.updated_at=new Date().toISOString();
+      m.user_id=this._user.id;
+      await sb.from('aluno_metricas').upsert(m,{onConflict:'user_id'});
+    }catch(e){console.warn('metricas',e);}
+  }
+  async upsertVideoProgress(video, ctx){
+    const sb=this.sbClient(); if(!sb||!this._user||!video||!video.id)return;
+    ctx=ctx||{};
+    const materialId=ctx.materialId||'';
+    const contexto=ctx.contexto||'teoria';
+    const addSec=ctx.segundos||0;
+    const pos=ctx.posicao||0;
+    try{
+      const {data}=await sb.from('video_progresso').select('*').eq('user_id',this._user.id).eq('video_id',video.id).eq('contexto',contexto).eq('material_id',materialId).maybeSingle();
+      const row=data||{user_id:this._user.id,video_id:video.id,contexto,tema:ctx.tema||null,material_id:materialId,titulo:video.titulo||null,canal:video.canal||null,segundos_vistos:0,ultima_posicao:0,percentual:0,plays:0};
+      row.segundos_vistos=(row.segundos_vistos||0)+addSec;
+      row.ultima_posicao=Math.max(row.ultima_posicao||0, pos);
+      if(ctx.duration>0)row.percentual=Math.min(100, Math.round(100*row.ultima_posicao/ctx.duration));
+      if(ctx.play)row.plays=(row.plays||0)+1;
+      row.updated_at=new Date().toISOString();
+      await sb.from('video_progresso').upsert(row,{onConflict:'user_id,video_id,contexto,material_id'});
+    }catch(e){console.warn('video prog',e);}
+  }
+  async upsertLicao(tema, licao, patch){
+    const sb=this.sbClient(); if(!sb||!this._user||!tema||!licao)return;
+    patch=patch||{};
+    try{
+      const {data}=await sb.from('licao_progresso').select('*').eq('user_id',this._user.id).eq('tema',tema).eq('licao',licao).maybeSingle();
+      const now=new Date().toISOString();
+      const row=data||{user_id:this._user.id,tema,licao,aberturas:0,segundos_lidos:0,concluida:false,primeira_abertura:now};
+      if(patch.abertura){row.aberturas=(row.aberturas||0)+1; row.ultima_abertura=now; if(!row.primeira_abertura)row.primeira_abertura=now;}
+      if(patch.segundos)row.segundos_lidos=(row.segundos_lidos||0)+patch.segundos;
+      if(patch.concluida){row.concluida=true; row.concluida_em=now;}
+      await sb.from('licao_progresso').upsert(row,{onConflict:'user_id,tema,licao'});
+    }catch(e){console.warn('licao prog',e);}
+  }
+  async upsertPergunta(questaoId, tema, modo, patch){
+    const sb=this.sbClient(); if(!sb||!this._user||!questaoId)return;
+    patch=patch||{}; modo=modo||'pratica';
+    try{
+      const {data}=await sb.from('pergunta_vistas').select('*').eq('user_id',this._user.id).eq('questao_id',questaoId).eq('modo',modo).maybeSingle();
+      const row=data||{user_id:this._user.id,questao_id:questaoId,tema:tema||null,modo,vistas:0,respondidas:0,certas:0,erradas:0,segundos_total:0};
+      if(patch.vista)row.vistas=(row.vistas||0)+1;
+      if(patch.respondida){
+        row.respondidas=(row.respondidas||0)+1;
+        if(patch.ok)row.certas=(row.certas||0)+1; else row.erradas=(row.erradas||0)+1;
+      }
+      if(patch.segundos)row.segundos_total=(row.segundos_total||0)+Math.round(patch.segundos);
+      row.ultima_vista=new Date().toISOString();
+      await sb.from('pergunta_vistas').upsert(row,{onConflict:'user_id,questao_id,modo'});
+    }catch(e){console.warn('perg',e);}
+  }
+  flushLicaoTempo(){
+    if(!this._licaoWatch||!this._licaoWatch.tema)return;
+    const sec=Math.max(0, Math.round((Date.now()-this._licaoWatch.t0)/1000));
+    if(sec<2){this._licaoWatch=null;return;}
+    const {tema,licao}=this._licaoWatch;
+    this._licaoWatch=null;
+    this.track('licao_tempo',{tema,licao,segundos:sec});
+    this.upsertLicao(tema,licao,{segundos:sec});
+  }
+  startLicaoWatch(tema,licao){
+    this.flushLicaoTempo();
+    this._licaoWatch={tema,licao,t0:Date.now()};
+    this.track('licao_aberta',{tema,licao});
+    this.upsertLicao(tema,licao,{abertura:true});
+  }
+  onYtMessage(e){
+    if(!e||!e.origin||e.origin.indexOf('youtube.com')<0)return;
+    let data=e.data;
+    try{if(typeof data==='string')data=JSON.parse(data);}catch(err){return;}
+    if(!data||!data.event)return;
+    // YouTube posts don't always include iframe id; attribute to last known playing ctx
+    const ctxMap=this._ytCtx||{};
+    const keys=Object.keys(ctxMap);
+    if(!keys.length)return;
+    let ctx=null;
+    for(const k of keys){if(ctxMap[k].playing){ctx=ctxMap[k];break;}}
+    if(!ctx)ctx=ctxMap[keys[keys.length-1]];
+    if(!ctx||!ctx.video)return;
+    if(data.event==='onStateChange'){
+      const st=data.info;
+      if(st===1){ // playing
+        ctx.playing=true; ctx.lastTick=Date.now();
+        this.track('video_play',{video_id:ctx.video.id,tema:ctx.tema,material_id:ctx.materialId||null,meta:{contexto:ctx.contexto,titulo:ctx.video.titulo}});
+        this.upsertVideoProgress(ctx.video,{contexto:ctx.contexto,tema:ctx.tema,materialId:ctx.materialId,play:true});
+      } else if(st===2||st===0){ // pause / ended
+        if(ctx.playing){
+          const sec=Math.max(0, Math.round((Date.now()-ctx.lastTick)/1000));
+          ctx.playing=false;
+          if(sec>0){
+            this.track('video_tick',{video_id:ctx.video.id,tema:ctx.tema,material_id:ctx.materialId||null,segundos:sec,meta:{contexto:ctx.contexto}});
+            this.upsertVideoProgress(ctx.video,{contexto:ctx.contexto,tema:ctx.tema,materialId:ctx.materialId,segundos:sec});
+          }
+          this.track('video_pause',{video_id:ctx.video.id,tema:ctx.tema,material_id:ctx.materialId||null,meta:{contexto:ctx.contexto,state:st}});
+        }
+      }
+    } else if(data.event==='infoDelivery'&&data.info&&typeof data.info.currentTime==='number'){
+      if(ctx.playing){
+        const now=Date.now();
+        const sec=Math.max(0, Math.round((now-ctx.lastTick)/1000));
+        if(sec>=10){
+          ctx.lastTick=now;
+          this.track('video_tick',{video_id:ctx.video.id,tema:ctx.tema,material_id:ctx.materialId||null,segundos:sec,meta:{contexto:ctx.contexto,pos:data.info.currentTime}});
+          this.upsertVideoProgress(ctx.video,{contexto:ctx.contexto,tema:ctx.tema,materialId:ctx.materialId,segundos:sec,posicao:Math.round(data.info.currentTime),duration:Math.round(data.info.duration||0)});
+        }
+      }
+    }
+  }
+  sbClient(){
+    if(this._sb)return this._sb;
+    const cfg=window.__MATPREP__||{};
+    const url=cfg.supabaseUrl||'https://rnxyxernvliyxpwldjee.supabase.co';
+    const key=cfg.supabaseKey||'sb_publishable_hLCpmcyokTzZZy1FmWiF4A_ReNOGxEq';
+    if(!window.supabase||!window.supabase.createClient)return null;
+    this._sb=window.supabase.createClient(url,key,{auth:{persistSession:true,autoRefreshToken:true,storage:window.localStorage}});
+    return this._sb;
+  }
+  async garantirAuth(){
+    const sb=this.sbClient(); if(!sb)return null;
+    try{
+      const {data:{session}}=await sb.auth.getSession();
+      if(session?.user)return session.user;
+      const {data,error}=await sb.auth.signInAnonymously();
+      if(error){console.warn('Auth anónima:',error.message);return null;}
+      return data?.user||null;
+    }catch(e){console.warn('Auth:',e);return null;}
+  }
+  mapDadosFromDb(temas,questoes,abertas,materiais){
+    const TEMAS=(temas||[]).slice().sort((a,b)=>(a.ordem||0)-(b.ordem||0)).map(t=>({
+      id:t.id,titulo:t.titulo,icone:t.icone,dif:t.dif,duracao:t.duracao,grad:t.grad,
+      desc:t.descricao||t.desc||'',video:t.video||null,
+      dicaFacil:t.dica_facil||t.dicaFacil||(t.video&&t.video.dicaFacil)||null,
+      teoria:t.teoria||[],formulas:t.formulas||[],exemplo:t.exemplo||null,erros:t.erros||[]
+    }));
+    const QUESTOES=(questoes||[]).map(q=>({
+      id:q.id,tema:q.tema,dif:q.dif,q:q.enunciado||q.q,ops:q.ops||[],c:q.correta??q.c??0,passos:q.passos||[],fonte:q.fonte||null
+    }));
+    const ABERTAS=(abertas||[]).map(a=>({
+      id:a.id,tema:a.tema,q:a.enunciado||a.q,res:a.resolucao||a.res,fonte:a.fonte||null
+    }));
+    const MATERIAIS=(materiais||[]).map(m=>({
+      id:m.id,tipo:m.tipo,tema:m.tema,titulo:m.titulo,ficheiro:m.ficheiro,video:m.video||null
+    }));
+    return {TEMAS,QUESTOES,ABERTAS,MATERIAIS};
+  }
+  async carregarDados(){
+    const [jogoMod, dadosLocal]=await Promise.all([
+      import('./jogo.js'),
+      import('./dados.js').catch(()=>null)
+    ]);
+    this.J=jogoMod;
+    const sb=this.sbClient();
+    if(sb){
+      try{
+        const [t,q,a,m]=await Promise.all([
+          sb.from('temas').select('*').order('ordem'),
+          sb.from('questoes').select('*'),
+          sb.from('abertas').select('*'),
+          sb.from('materiais').select('*')
+        ]);
+        if(!t.error&&!q.error&&t.data?.length){
+          return this.mapDadosFromDb(t.data,q.data||[],a.data||[],m.data||[]);
+        }
+        if(t.error)console.warn('Supabase temas:',t.error.message);
+      }catch(e){console.warn('Falha ao ler Supabase, uso dados.js',e);}
+    }
+    const mod=dadosLocal||await import('./dados.js');
+    return {TEMAS:mod.TEMAS,QUESTOES:mod.QUESTOES,ABERTAS:mod.ABERTAS,MATERIAIS:mod.MATERIAIS};
+  }
+  game(){
+    const st=this.state.st;
+    if(!st.game){
+      const g=(this.J&&this.J.gameDefault)?this.J.gameDefault():{nivel:1,xp:0,hp:100,maxHp:100,inventario:{},bossesMortos:[],vitorias:0,derrotas:0,combate:null};
+      st.game=g;
+    }
+    return st.game;
+  }
+  saveGame(patch, extraState){
+    this.mut(st=>{
+      if(!st.game)st.game=(this.J&&this.J.gameDefault)?this.J.gameDefault():{};
+      Object.assign(st.game, patch||{});
+    });
+    if(extraState)this.setState(extraState);
+  }
+  ganharXp(qtd, aviso){
+    const J=this.J; if(!J||!qtd)return;
+    const g=this.game();
+    const axp=J.aplicarXp(g, qtd);
+    this.mut(st=>{st.game=axp.game;});
+    this.pingXp();
+    if(axp.subiu)this.flashNivel(axp.game.nivel);
+    else if(aviso)this.avisar(aviso);
+  }
+  pingXp(){
+    this.setState({xpPing:true});
+    clearTimeout(this._xpPingT);
+    this._xpPingT=setTimeout(()=>this.setState({xpPing:false}),520);
+  }
+  flashNivel(nivel){
+    this.setState({levelFlash:true});
+    const J=this.J;
+    this.avisar((J&&J.pickFrase&&J.pickFrase('nivel',{n:nivel}))||('Subiste pro nível '+nivel+' — aura up!'));
+    clearTimeout(this._lvlT);
+    this._lvlT=setTimeout(()=>this.setState({levelFlash:false}),1100);
+  }
+  playHitFx(tipo){
+    // tipo: 'boss' | 'player'
+    const slash=tipo==='boss';
+    this.setState({hitFx:tipo,slashOn:slash});
+    clearTimeout(this._hitT);
+    this._hitT=setTimeout(()=>this.setState({hitFx:null,slashOn:false}),450);
+  }
+  iniciarBoss(bossId){
+    const J=this.J; if(!J)return;
+    const boss=J.bossPorId(bossId); if(!boss)return;
+    const g=this.game();
+    if(J.bossLiberado&&!J.bossLiberado(boss.id,g.bossesMortos||[])){
+      const ant=J.bossAnterior(boss.id);
+      this.avisar(ant?'Derrota primeiro: '+ant.nome:'Boss bloqueado');
+      return;
+    }
+    const maxHp=J.maxHpDeNivel(g.nivel);
+    const combate={bossId:boss.id,bossHp:boss.hp,bossMax:boss.hp,usouAjuda:false,escudo:false,foco:false,fase:'ativo',log:(J.pickFrase&&J.pickFrase('idle'))||'Hora de farmar aura — acerta e dá hit!'};
+    this.mut(st=>{
+      st.game=Object.assign({},g,{hp:maxHp,maxHp,combate});
+    });
+    this.setState({view:'pratica',filtT:boss.tema||'todos',modo:boss.misto?'exames':'inteligente',q:null,qSel:null,opsHide:[],ajudaHint:null,dmgFloat:null,hitFx:null,slashOn:false},()=>this.novaPergunta());
+    this.track('boss_inicio',{tema:boss.tema,meta:{boss:boss.id,nome:boss.nome}});
+    window.scrollTo(0,0);
+  }
+  fugirBoss(){
+    this.mut(st=>{if(st.game)st.game.combate=null;});
+    this.setState({q:null,qSel:null,opsHide:[],ajudaHint:null,dmgFloat:null});
+  }
+  mostrarDmg(txt, cor, lado){
+    const style=lado==='player'
+      ?{right:'18%',top:'28%',color:cor||'#fb7185'}
+      :{left:'16%',top:'22%',color:cor||'#2dd4bf'};
+    this.setState({dmgFloat:{txt,cor,t:Date.now(),style}});
+    clearTimeout(this._dmgT);
+    this._dmgT=setTimeout(()=>this.setState({dmgFloat:null}),1000);
+  }
+  usarItem(itemId){
+    const J=this.J; if(!J)return;
+    const g=this.game(); const c=g.combate; if(!c||c.fase!=='ativo')return;
+    const item=J.itemPorId(itemId); if(!item)return;
+    const qtd=(g.inventario[itemId]||0); if(qtd<=0){this.avisar('Não tens este item');return;}
+    const inv=Object.assign({},g.inventario); inv[itemId]=qtd-1; if(inv[itemId]<=0)delete inv[itemId];
+    c.usouAjuda=true;
+    let ajudaHint=null; let opsHide=this.state.opsHide||[];
+    if(item.efeito==='elimina2'&&this.state.q){
+      const wrong=[0,1,2,3].filter(i=>i!==this.state.q.c);
+      opsHide=wrong.sort(()=>Math.random()-.5).slice(0,2);
+      ajudaHint='Lente 50/50: duas opções erradas foram removidas.';
+    } else if(item.efeito==='escudo'){c.escudo=true;ajudaHint='Escudo ativo: o próximo erro não tira HP.';}
+    else if(item.efeito==='passo'&&this.state.q){ajudaHint='1.º passo: '+(this.state.q.q.passos&&this.state.q.q.passos[0]?this.state.q.q.passos[0]:'Analisa bem o enunciado.');}
+    else if(item.efeito==='foco'){c.foco=true;ajudaHint='Cristal de Foco: o próximo acerto causa +50% de dano.';}
+    else if(item.efeito==='formula'){
+      const temaId=this.state.q&&this.state.q.q.tema;
+      const tema=this.D&&this.D.TEMAS.find(t=>t.id===temaId);
+      const f=tema&&tema.formulas&&tema.formulas[0];
+      ajudaHint=f?('Fórmula: '+f.n+' — '+f.t.replace(/\$/g,'')):'Relembra as fórmulas do tema.';
+    } else if(item.efeito==='cura'){
+      const cura=25; g.hp=Math.min(g.maxHp,g.hp+cura);
+      ajudaHint='Elixir: +'+cura+' HP.';
+      this.mostrarDmg('+'+cura+' HP','#4ade80','player');
+    }
+    this.mut(st=>{st.game=Object.assign({},g,{inventario:inv,combate:c,hp:g.hp});});
+    this.setState({ajudaHint,opsHide});
+    this.avisar((J.pickFrase&&J.pickFrase('ajuda'))||'Ajuda usada — sem loot (aura freemium)');
+    this.track('item_usado',{meta:{item:itemId,boss:c.bossId}});
+  }
+  resolverCombate(ok, dif){
+    const J=this.J; if(!J)return null;
+    const g=this.game(); const c=g.combate; if(!c||c.fase!=='ativo')return null;
+    const frase=(tipo,vars)=>(J.pickFrase&&J.pickFrase(tipo,vars))||'';
+    let log=''; let xpGanho=0;
+    if(ok){
+      const dmg=J.danoAoBoss(dif,g.nivel,c.foco);
+      c.bossHp=Math.max(0,c.bossHp-dmg);
+      c.foco=false;
+      xpGanho=J.xpPorAcerto(dif);
+      const hitTxt=frase('hit')||'67 — farmaste aura!';
+      c.feedTitulo=frase('feedHit')||hitTxt;
+      log=hitTxt+' −'+dmg+' no boss · +'+xpGanho+' XP';
+      this.playHitFx('boss');
+      this.mostrarDmg('−'+dmg,'#2dd4bf','boss');
+    } else {
+      // Boss ataca + regenera vida — sem XP
+      let dmg=J.danoAoJogador(dif);
+      const regen=J.regenBoss?J.regenBoss(dif):10;
+      const hpAntes=c.bossHp;
+      c.bossHp=Math.min(c.bossMax,c.bossHp+regen);
+      const regenReal=c.bossHp-hpAntes;
+      if(c.escudo){
+        dmg=0;c.escudo=false;
+        log=frase('escudo')||'Escudo salvou a tua aura! Boss falhou o hit.';
+        c.feedTitulo=log;
+      } else {
+        g.hp=Math.max(0,g.hp-dmg);
+        const missTxt=frase('miss')||'Aura drain… foste.';
+        c.feedTitulo=frase('feedMiss')||missTxt;
+        log=missTxt+' Boss hit −'+dmg+' HP';
+      }
+      if(regenReal>0)log+=' · boss regenerou +'+regenReal;
+      log+=' · 0 XP';
+      this.playHitFx('player');
+      if(dmg>0)this.mostrarDmg('−'+dmg+' HP','#fb7185','player');
+      else this.mostrarDmg('BLOQUEADO','#fbbf24','player');
+      if(regenReal>0){
+        clearTimeout(this._regenDmgT);
+        this._regenDmgT=setTimeout(()=>this.mostrarDmg('+'+regenReal+' ↻','#fb7185','boss'),420);
+      }
+    }
+    if(xpGanho>0){
+      const axp=J.aplicarXp(Object.assign({},g,{xp:g.xp}), xpGanho);
+      Object.assign(g,axp.game);
+      this.pingXp();
+      if(axp.subiu)this.flashNivel(g.nivel);
+    }
+    c.log=log;
+    if(c.bossHp<=0){
+      c.fase='vitoria';
+      g.vitorias=(g.vitorias||0)+1;
+      if(!g.bossesMortos.includes(c.bossId))g.bossesMortos.push(c.bossId);
+      const boss=J.bossPorId(c.bossId);
+      const bonus=boss?boss.xpBonus:40;
+      const ax2=J.aplicarXp(g, bonus);
+      Object.assign(g,ax2.game);
+      this.pingXp();
+      if(ax2.subiu)this.flashNivel(g.nivel);
+      let dropTxt='';
+      if(!c.usouAjuda&&boss&&boss.drop){
+        const inv=Object.assign({},g.inventario);
+        inv[boss.drop]=(inv[boss.drop]||0)+1;
+        g.inventario=inv;
+        const it=J.itemPorId(boss.drop);
+        dropTxt=frase('dropOk',{item:it?it.nome:boss.drop})||('Loot unlocked: '+(it?it.nome:boss.drop)+'!');
+      } else {
+        dropTxt=frase('dropNo')||'Sem loot — usaste ajuda (aura freemium).';
+      }
+      const prox=J.BOSSES[J.indiceBoss(c.bossId)+1];
+      const proxTxt=prox?(frase('proxBoss',{nome:prox.nome})||(' · Desbloqueaste: '+prox.nome)):'';
+      c.vitoriaTitulo=frase('vitoriaTitulo')||'Boss deleted. Aura infinita.';
+      c.vitoriaTxt=(frase('vitoriaExtra',{xp:bonus})||('Farmaste +'+bonus+' XP.'))+' '+dropTxt+proxTxt;
+      this.track('boss_vitoria',{tema:boss&&boss.tema,meta:{boss:c.bossId,usouAjuda:c.usouAjuda,drop:!c.usouAjuda&&boss&&boss.drop}});
+    } else if(g.hp<=0){
+      c.fase='derrota';
+      g.derrotas=(g.derrotas||0)+1;
+      g.hp=g.maxHp;
+      c.derrotaTitulo=frase('derrotaTitulo')||'Aura a 0… foste.';
+      c.derrotaTxt=frase('derrotaExtra')||'Farma a zona, recupera aura e volta. O HP já resetou.';
+      this.track('boss_derrota',{meta:{boss:c.bossId}});
+    }
+    g.combate=c;
+    this.mut(st=>{st.game=g;});
+    return log;
+  }
+  async carregarProgressoRemoto(){
+    const sb=this.sbClient(); if(!sb||!this._user)return null;
+    try{
+      const {data,error}=await sb.from('progresso').select('*').eq('user_id',this._user.id).maybeSingle();
+      if(error){console.warn('Progresso:',error.message);return null;}
+      if(!data)return null;
+      const hist=data.hist||{};
+      const game=hist._game||null;
+      const histClean=Object.assign({},hist); delete histClean._game;
+      return {
+        streak:data.streak??1,lastDia:data.last_dia||null,licoes:data.licoes||{},ultima:data.ultima||null,
+        resp:data.resp||{t:0,c:0,seq:0,maxSeq:0,tempo:0,porTema:{}},
+        erradas:data.erradas||[],rever:data.rever||[],hist:histClean,exames:data.exames||[],game
+      };
+    }catch(e){return null;}
+  }
+  agendarSyncProgresso(st){
+    clearTimeout(this._syncT);
+    this._syncT=setTimeout(()=>this.syncProgresso(st),700);
+  }
+  async syncProgresso(st){
+    const sb=this.sbClient(); if(!sb)return;
+    try{
+      if(!this._user)this._user=await this.garantirAuth();
+      if(!this._user)return;
+      const payload={
+        user_id:this._user.id,
+        streak:st.streak||1,
+        last_dia:st.lastDia||null,
+        licoes:st.licoes||{},
+        ultima:st.ultima||null,
+        resp:st.resp||{},
+        erradas:st.erradas||[],
+        rever:st.rever||[],
+        hist:Object.assign({},st.hist||{},{_game:st.game||null}),
+        exames:st.exames||[],
+        updated_at:new Date().toISOString()
+      };
+      const {error}=await sb.from('progresso').upsert(payload,{onConflict:'user_id'});
+      if(error)console.warn('Sync progresso:',error.message);
+    }catch(e){console.warn('Sync:',e);}
+  }
+  componentDidMount(){
+    (async()=>{
+      try{
+        this._user=await this.garantirAuth();
+        const remoto=await this.carregarProgressoRemoto();
+        let local=null; try{local=JSON.parse(localStorage.getItem('matprep_v1'));}catch(e){}
+        let base=remoto||local||this.state.st;
+        if(remoto&&local&&(local.resp?.t||0)>(remoto.resp?.t||0))base=local;
+        if(base&&!base.hist)base.hist={};
+        if(base.hist&&base.hist._game&&!base.game)base.game=base.hist._game;
+        if(!base.game&&this.J)base.game=this.J.gameDefault();
+        const st=this.streakUp(base);
+        this.setState({st}); this.gravar(st);
+      }catch(e){
+        let s=null; try{s=JSON.parse(localStorage.getItem('matprep_v1'));}catch(err){}
+        const st=this.streakUp(s||this.state.st);
+        this.setState({st}); this.gravar(st);
+      }
+      try{
+        this.D=await this.carregarDados();
+        if(!this.state.st.game&&this.J){
+          this.mut(st=>{st.game=this.J.gameDefault();});
+        }
+        this.setState({pronto:true});
+      }catch(e){
+        console.error(e);
+        import('./dados.js').then(m=>{this.D=m;this.setState({pronto:true});});
+      }
+    })();
+    this.kt=setInterval(()=>{if(window.katex){clearInterval(this.kt);this.forceUpdate();this.refreshIcons();}},200);
+    this.refreshIcons();
+    this.onKey=(e)=>this.tecla(e); window.addEventListener('keydown',this.onKey);
+    this.onRes=()=>this.setState({w:window.innerWidth}); window.addEventListener('resize',this.onRes); this.onRes();
+    this._onYt=(e)=>this.onYtMessage(e); window.addEventListener('message',this._onYt);
+    this._onLeave=()=>{this.flushLicaoTempo();};
+    window.addEventListener('beforeunload',this._onLeave);
+    this.track('sessao_inicio',{meta:{ua:navigator.userAgent.slice(0,120),w:window.innerWidth}});
+    // Heartbeat de estudo enquanto a janela está aberta
+    this._hb=setInterval(()=>{
+      if(document.hidden)return;
+      const s=this.state;
+      if(s.view==='tema'&&s.tema){
+        const tipo=(this.TIPOS[s.licao]||{}).id||('l'+s.licao);
+        this.track('licao_tempo',{tema:s.tema,licao:tipo,segundos:15,meta:{heartbeat:true}});
+        this.upsertLicao(s.tema,tipo,{segundos:15});
+        if(this._licaoWatch)this._licaoWatch.t0=Date.now();
+      }
+      // vídeo a tocar: reforço se YouTube não enviar infoDelivery
+      const ctxMap=this._ytCtx||{};
+      Object.keys(ctxMap).forEach(k=>{
+        const ctx=ctxMap[k];
+        if(ctx&&ctx.playing){
+          const sec=Math.max(0, Math.round((Date.now()-ctx.lastTick)/1000));
+          if(sec>=15){
+            ctx.lastTick=Date.now();
+            this.track('video_tick',{video_id:ctx.video.id,tema:ctx.tema,material_id:ctx.materialId||null,segundos:sec,meta:{contexto:ctx.contexto,heartbeat:true}});
+            this.upsertVideoProgress(ctx.video,{contexto:ctx.contexto,tema:ctx.tema,materialId:ctx.materialId,segundos:sec});
+          }
+        }
+      });
+    },15000);
+  }
+  componentDidUpdate(_props, prevState){
+    this.refreshIcons();
+    const s=this.state, p=prevState||{};
+    if(s.view!==p.view){
+      this.track('view',{meta:{de:p.view||null,para:s.view},tema:s.tema||s.aprTema||null});
+      if(p.view==='tema')this.flushLicaoTempo();
+    }
+  }
+  componentWillUnmount(){
+    window.removeEventListener('keydown',this.onKey);
+    window.removeEventListener('resize',this.onRes);
+    window.removeEventListener('message',this._onYt);
+    window.removeEventListener('beforeunload',this._onLeave);
+    clearInterval(this.kt);clearInterval(this.exTimer);clearInterval(this._hb);clearTimeout(this._syncT);
+    this.flushLicaoTempo();
+  }
+  streakUp(s){const hoje=new Date().toDateString();if(s.lastDia===hoje)return s;const ont=new Date(Date.now()-864e5).toDateString();const c=JSON.parse(JSON.stringify(s));c.streak=(s.lastDia===ont)?(s.streak||0)+1:1;c.lastDia=hoje;return c;}
+  gravar(st){try{localStorage.setItem('matprep_v1',JSON.stringify(st));}catch(e){} this.agendarSyncProgresso(st);}
+  mut(fn){const st=JSON.parse(JSON.stringify(this.state.st));fn(st);this.setState({st});this.gravar(st);}
+  avisar(msg){clearTimeout(this._tt);this.setState({toast:msg});this._tt=setTimeout(()=>this.setState({toast:null}),2400);}
+  mx(s){
+    if(s==null) return null;
+    const partes=String(s).split(/(\$\$[^$]+\$\$|\$[^$]+\$)/g);
+    return partes.map((p,i)=>{
+      if(p.startsWith('$$')&&p.endsWith('$$')){
+        const html=window.katex?katex.renderToString(p.slice(2,-2),{throwOnError:false,displayMode:true}):p.slice(2,-2);
+        return React.createElement('span',{key:i,style:{display:'block',textAlign:'center',margin:'6px 0',overflowX:'auto'},dangerouslySetInnerHTML:{__html:html}});
+      }
+      if(p.startsWith('$')&&p.endsWith('$')&&p.length>1){
+        const html=window.katex?katex.renderToString(p.slice(1,-1),{throwOnError:false}):p.slice(1,-1);
+        return React.createElement('span',{key:i,dangerouslySetInnerHTML:{__html:html}});
+      }
+      return p;
+    });
+  }
+  bar(pct,extra){return Object.assign({height:'100%',width:Math.max(0,Math.min(100,pct))+'%',background:'linear-gradient(90deg,#2dd4bf,#38bdf8)',borderRadius:'99px',transition:'width .4s ease'},extra||{});}
+  difStyle(d){const c=d==='Fácil'?'34,197,94':d==='Médio'?'245,158,11':'239,68,68';const cor=d==='Fácil'?'#4ade80':d==='Médio'?'#fbbf24':'#f87171';return {background:'rgba('+c+',.12)',border:'1px solid rgba('+c+',.4)',color:cor,borderRadius:'999px',padding:'3px 10px',fontSize:'11px',fontWeight:'800'};}
+  baralhar(q){
+    const idx=[0,1,2,3].sort(()=>Math.random()-.5);
+    return {q, ops:idx.map(i=>q.ops[i]), c:idx.indexOf(q.c)};
+  }
+  optStyle(estado){
+    const base={display:'flex',alignItems:'center',gap:'12px',padding:'13px 15px',borderRadius:'12px',border:'1px solid #2a3a52',background:'#121c2e',cursor:'pointer',transition:'all .15s',color:'#e8eef7',fontSize:'15px',lineHeight:'1.5'};
+    if(estado==='certa')Object.assign(base,{border:'1px solid #22c55e',background:'rgba(34,197,94,.12)',color:'#bbf7d0'});
+    if(estado==='errada')Object.assign(base,{border:'1px solid #ef4444',background:'rgba(239,68,68,.12)',color:'#fecaca'});
+    if(estado==='sel')Object.assign(base,{border:'1px solid #2dd4bf',background:'rgba(45,212,191,.13)'});
+    if(estado==='dim')Object.assign(base,{opacity:.55,cursor:'default'});
+    return base;
+  }
+  letraStyle(estado){
+    const b={width:'26px',height:'26px',borderRadius:'50%',background:'#2a3a52',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:'800',fontSize:'12px',flexShrink:0,color:'#2dd4bf'};
+    if(estado==='certa')Object.assign(b,{background:'#22c55e',color:'#052e16'});
+    if(estado==='errada')Object.assign(b,{background:'#ef4444',color:'#fff'});
+    if(estado==='sel')Object.assign(b,{background:'#0d9488',color:'#fff'});
+    return b;
+  }
+  chip(ativo,cor){
+    const b={border:'1px solid #2a3a52',background:'#121c2e',color:'#8b9bb4',borderRadius:'999px',padding:'6px 13px',fontSize:'12.5px',fontWeight:'700',cursor:'pointer',transition:'all .15s'};
+    if(ativo)Object.assign(b,{border:'1px solid '+(cor||'#2dd4bf'),background:'rgba(45,212,191,.12)',color:cor||'#2dd4bf'});
+    return b;
+  }
+  nav(v){this.flushLicaoTempo();this.setState({view:v});window.scrollTo(0,0);}
+  abrirAprender(id){this.flushLicaoTempo();this.setState({view:'aprender',aprTema:id||null});window.scrollTo(0,0); if(id)this.track('aprender_tema',{tema:id});}
+  abrirTema(id,li){
+    li=li||0;
+    this.flushLicaoTempo();
+    this.setState({view:'tema',tema:id,licao:li,rev:0,mq:{i:0,prep:null,sel:null,certas:0,fim:false}});
+    this.mut(st=>{st.ultima={tema:id,licao:li};});
+    const tipo=(this.TIPOS[li]||{}).id||('l'+li);
+    this.startLicaoWatch(id,tipo);
+    window.scrollTo(0,0);
+  }
+  mudarLicao(li){
+    this.flushLicaoTempo();
+    this.setState({licao:li,rev:0,mq:{i:0,prep:null,sel:null,certas:0,fim:false}});
+    this.mut(st=>{st.ultima={tema:this.state.tema,licao:li};});
+    const tipo=(this.TIPOS[li]||{}).id||('l'+li);
+    if(this.state.tema)this.startLicaoWatch(this.state.tema,tipo);
+  }
+  marcarLicao(temaId,tipo){
+    const ja=this.state.st.licoes[temaId]&&this.state.st.licoes[temaId][tipo];
+    this.mut(st=>{if(!st.licoes[temaId])st.licoes[temaId]={};st.licoes[temaId][tipo]=true;});
+    if(!ja)this.ganharXp(12);
+    this.track('licao_concluida',{tema:temaId,licao:tipo});
+    this.upsertLicao(temaId,tipo,{concluida:true});
+  }
+  regResposta(q,ok,dt,modo){
+    this.mut(st=>{
+      st.resp.t++; if(ok)st.resp.c++;
+      st.resp.seq=ok?st.resp.seq+1:0; st.resp.maxSeq=Math.max(st.resp.maxSeq,st.resp.seq);
+      st.resp.tempo+=dt||0;
+      if(!st.resp.porTema[q.tema])st.resp.porTema[q.tema]={t:0,c:0};
+      st.resp.porTema[q.tema].t++; if(ok)st.resp.porTema[q.tema].c++;
+      if(!st.hist)st.hist={};
+      if(!st.hist[q.id])st.hist[q.id]={t:0,c:0,e:0};
+      st.hist[q.id].t++; if(ok)st.hist[q.id].c++; else st.hist[q.id].e++;
+      const i=st.erradas.indexOf(q.id);
+      if(ok){if(i>=0)st.erradas.splice(i,1);}else{if(i<0)st.erradas.push(q.id);}
+    });
+    const m=modo||'pratica';
+    this.track('pergunta_respondida',{tema:q.tema,questao_id:q.id,segundos:Math.round(dt||0),meta:{ok:!!ok,dif:q.dif,modo:m,fonte:q.fonte||null}});
+    this.upsertPergunta(q.id,q.tema,m,{respondida:true,ok:!!ok,segundos:dt||0});
+  }
+  pesoQuestao(q){
+    const st=this.state.st;
+    const h=(st.hist&&st.hist[q.id])||{t:0,c:0,e:0};
+    let w=1;
+    if(st.erradas.includes(q.id))w+=8;
+    if(st.rever.includes(q.id))w+=4;
+    w+=Math.min(6,h.e*2);
+    if(h.t===0)w+=3;
+    else if(h.c/h.t<0.5)w+=4;
+    const pt=st.resp.porTema[q.tema];
+    if(pt&&pt.t>=3&&pt.c/pt.t<0.55)w+=2;
+    return w;
+  }
+  poolPratica(){
+    if(!this.D)return[];
+    let p=this.D.QUESTOES.slice();
+    const s=this.state;
+    if(s.filtT!=='todos')p=p.filter(q=>q.tema===s.filtT);
+    if(s.filtD!=='todos')p=p.filter(q=>q.dif===s.filtD);
+    if(s.modo==='erradas')p=p.filter(q=>s.st.erradas.includes(q.id));
+    else if(s.modo==='rever')p=p.filter(q=>s.st.rever.includes(q.id));
+    else if(s.modo==='exames')p=p.filter(q=>q.fonte&&/exame|prova|modelo/i.test(q.fonte));
+    return p;
+  }
+  escolherPonderado(cand){
+    if(this.state.modo!=='inteligente'||cand.length<=1)
+      return cand[Math.floor(Math.random()*cand.length)];
+    const pesos=cand.map(q=>this.pesoQuestao(q));
+    const total=pesos.reduce((a,b)=>a+b,0);
+    let r=Math.random()*total;
+    for(let i=0;i<cand.length;i++){r-=pesos[i];if(r<=0)return cand[i];}
+    return cand[cand.length-1];
+  }
+  novaPergunta(extra){
+    const p=this.poolPratica();
+    if(!p.length){this.setState(Object.assign({q:null,qSel:null,opsHide:[],ajudaHint:null},extra||{}));return;}
+    let cand=p; const atual=this.state.q;
+    if(atual&&p.length>1)cand=p.filter(q=>q.id!==atual.q.id);
+    const q=this.escolherPonderado(cand);
+    this.setState(Object.assign({q:this.baralhar(q),qSel:null,qT:Date.now(),opsHide:[],ajudaHint:null},extra||{}));
+    const boss=this.game()&&this.game().combate&&this.game().combate.bossId;
+    this.track('pergunta_vista',{tema:q.tema,questao_id:q.id,meta:{modo:this.state.modo,dif:q.dif,fonte:q.fonte||null,boss}});
+    this.upsertPergunta(q.id,q.tema,this.state.modo||'pratica',{vista:true});
+  }
+  setFiltro(campo,val){
+    const o={};o[campo]=val;
+    this.setState(o,()=>{if(campo!=='filtMat')this.novaPergunta();});
+  }
+  setModo(m){this.setState({modo:m},()=>this.novaPergunta());}
+  responder(i){
+    const s=this.state; if(!s.q||s.qSel!=null)return;
+    if((s.opsHide||[]).includes(i))return;
+    const ok=i===s.q.c; const dt=(Date.now()-s.qT)/1000;
+    this.setState({qSel:i,sessao:{t:s.sessao.t+1,c:s.sessao.c+(ok?1:0)},opsHide:[],ajudaHint:null});
+    this.regResposta(s.q.q,ok,dt,s.modo||'pratica');
+    const g=this.game();
+    if(g&&g.combate&&g.combate.fase==='ativo')this.resolverCombate(ok,s.q.q.dif);
+  }
+  tecla(e){
+    const tag=(e.target&&e.target.tagName)||'';
+    if(tag==='INPUT'||tag==='TEXTAREA')return;
+    const s=this.state;
+    const mapa={'1':0,'2':1,'3':2,'4':3,'a':0,'b':1,'c':2,'d':3};
+    const k=e.key.toLowerCase();
+    if(s.view==='pratica'&&s.q){
+      const combate=this.game()&&this.game().combate;
+      if(combate&&combate.fase!=='ativo')return;
+      if(s.qSel==null&&mapa[k]!=null){this.responder(mapa[k]);e.preventDefault();}
+      else if(s.qSel!=null&&e.key==='Enter'){
+        if(combate&&combate.fase==='ativo')this.novaPergunta();
+        else if(!combate)this.novaPergunta();
+        e.preventDefault();
+      }
+    } else if(s.view==='tema'&&this.TIPOS[s.licao]&&this.TIPOS[s.licao].id==='quiz'&&s.mq.prep&&!s.mq.fim){
+      if(s.mq.sel==null&&mapa[k]!=null){this.mqResponder(mapa[k]);e.preventDefault();}
+      else if(s.mq.sel!=null&&e.key==='Enter'){this.mqProxima();e.preventDefault();}
+    }
+  }
+  mqPerguntas(){return this.D?this.D.QUESTOES.filter(q=>q.tema===this.state.tema):[];}
+  mqGarantir(){
+    const s=this.state;
+    if(!s.mq.prep&&this.D){
+      const qs=this.mqPerguntas();
+      if(qs.length){
+        const prep=this.baralhar(qs[s.mq.i]);
+        this.setState({mq:Object.assign({},s.mq,{prep})});
+        this.track('pergunta_vista',{tema:prep.q.tema,questao_id:prep.q.id,meta:{modo:'miniquiz',dif:prep.q.dif}});
+        this.upsertPergunta(prep.q.id,prep.q.tema,'miniquiz',{vista:true});
+      }
+    }
+  }
+  mqResponder(i){
+    const s=this.state; if(s.mq.sel!=null||!s.mq.prep)return;
+    const ok=i===s.mq.prep.c;
+    this.regResposta(s.mq.prep.q,ok,0,'miniquiz');
+    this.setState({mq:Object.assign({},s.mq,{sel:i,certas:s.mq.certas+(ok?1:0)})});
+    if(ok&&this.J)this.ganharXp(Math.round(this.J.xpPorAcerto(s.mq.prep.q.dif)*0.35));
+  }
+  mqProxima(){
+    const s=this.state; const qs=this.mqPerguntas();
+    if(s.mq.i+1>=qs.length){
+      this.setState({mq:Object.assign({},s.mq,{fim:true})});
+      this.marcarLicao(s.tema,'quiz');
+      this.avisar('Mini-quiz concluído!');
+    } else {
+      const i=s.mq.i+1;
+      const prep=this.baralhar(qs[i]);
+      this.setState({mq:{i,prep,sel:null,certas:s.mq.certas,fim:false}});
+      this.track('pergunta_vista',{tema:prep.q.tema,questao_id:prep.q.id,meta:{modo:'miniquiz',dif:prep.q.dif}});
+      this.upsertPergunta(prep.q.id,prep.q.tema,'miniquiz',{vista:true});
+    }
+  }
+  iniciarExame(){
+    if(!this.D)return;
+    const min=this.props.minutosExame??90;
+    const porTema={}; this.D.QUESTOES.forEach(q=>{(porTema[q.tema]=porTema[q.tema]||[]).push(q);});
+    const gi=Object.values(porTema).map(a=>a[Math.floor(Math.random()*a.length)]).sort(()=>Math.random()-.5).slice(0,8).map(q=>this.baralhar(q));
+    const ab=this.D.ABERTAS.slice().sort(()=>Math.random()-.5).slice(0,3);
+    const ex={fase:'decorrer',gi,ab,resGI:[null,null,null,null,null,null,null,null],resGII:['','',''],aval:[null,null,null],i:0,seg:min*60,total:min*60};
+    this.setState({ex});
+    this.track('exame_inicio',{meta:{minutos:min,gi:gi.length,gii:ab.length}});
+    clearInterval(this.exTimer);
+    this.exTimer=setInterval(()=>{
+      const e=this.state.ex; if(!e||e.fase!=='decorrer')return;
+      if(e.seg<=1){this.terminarExame();return;}
+      this.setState({ex:Object.assign({},e,{seg:e.seg-1})});
+    },1000);
+  }
+  exSet(campo,val){this.setState({ex:Object.assign({},this.state.ex,{[campo]:val})});}
+  terminarExame(){clearInterval(this.exTimer);this.exSet('fase','correcao');window.scrollTo(0,0);}
+  verResultado(){
+    const e=this.state.ex;
+    if(e.aval.some(a=>a==null)){this.avisar('Autoavalia as 3 perguntas do Grupo II primeiro');return;}
+    const certGI=e.gi.reduce((n,q,i)=>n+(e.resGI[i]===q.c?1:0),0);
+    const pGI=certGI*1.5;
+    const pGII=e.aval.reduce((n,a)=>n+a*(8/3),0);
+    const nota=Math.round((pGI+pGII)*10)/10;
+    const ex=Object.assign({},e,{fase:'resultado',nota,pGI,pGII,certGI});
+    this.setState({ex});
+    this.track('exame_fim',{meta:{nota,pGI,pGII,certGI,aval:e.aval},segundos:Math.max(0,(e.total||0)-(e.seg||0))});
+    if(!e.guardado){
+      ex.guardado=true;
+      this.mut(st=>{st.exames.push({d:new Date().toLocaleDateString('pt-PT',{day:'numeric',month:'short'}),nota});});
+      const xpEx=Math.round(20+nota*4);
+      this.ganharXp(xpEx,'Exame: +'+xpEx+' XP');
+    }
+    window.scrollTo(0,0);
+  }
+  fmtNota(n){return n.toFixed(1).replace('.',',');}
+  fmtTempo(seg){const m=Math.floor(seg/60),s=seg%60;return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');}
+  renderVals(){
+    const s=this.state, D=this.D, st=s.st;
+    const nome=this.props.nome??'Estudante';
+    const ehMobile=s.w<760;
+    const navDefs=[{id:'home',ic:'home',rot:'Base'},{id:'pratica',ic:'swords',rot:'Arena'},{id:'inventario',ic:'backpack',rot:'Itens'},{id:'aprender',ic:'book-open',rot:'Treino'},{id:'exame',ic:'graduation-cap',rot:'Exame'},{id:'progresso',ic:'chart-column',rot:'Rank'}];
+    const navItens=navDefs.map(n=>({rot:n.rot,ic:this.ic(n.ic,18)||this.ic(n.id==='pratica'?'swords':'package',18),abrir:()=>{
+      if(n.id==='aprender')this.abrirAprender(null);
+      else if(n.id==='pratica'){this.setState({view:'pratica'});window.scrollTo(0,0);}
+      else if(n.id==='inventario'){this.setState({view:'inventario'});window.scrollTo(0,0);}
+      else if(n.id==='materiais')this.setState({view:'materiais',matSel:null});
+      else this.nav(n.id);
+    },
+      style:{padding:'8px 12px',borderRadius:'9px',fontSize:'13px',fontWeight:'700',cursor:'pointer',color:s.view===n.id?'#e8eef7':'#8b9bb4',background:s.view===n.id?'rgba(45,212,191,.12)':'transparent',transition:'all .15s'},
+      mStyle:{flex:1,textAlign:'center',padding:'7px 2px',borderRadius:'10px',cursor:'pointer',color:s.view===n.id?'#2dd4bf':'#8b9bb4'}}));
+    const g=(!s.pronto)?{nivel:1,xp:0,hp:100,maxHp:100,inventario:{},vitorias:0}:(this.game?this.game():(st.game||{nivel:1,xp:0,hp:100,maxHp:100,inventario:{},vitorias:0}));
+    const xpNeed=(this.J&&this.J.xpParaNivel)?this.J.xpParaNivel(g.nivel):100;
+    const base={
+      pronto:s.pronto, aCarregar:!s.pronto, nome, inicial:(nome[0]||'E').toUpperCase(),
+      streak:st.streak, pesquisa:s.pesquisa, toast:s.toast, levelFlash:!!s.levelFlash,
+      gNivel:g.nivel||1, gXpTxt:(g.xp||0)+'/'+xpNeed+' XP', gHpTxt:(g.hp||0)+'/'+(g.maxHp||100),
+      gXpBar:this.bar(100*(g.xp||0)/xpNeed,{background:'linear-gradient(90deg,#fbbf24,#f59e0b)'}),
+      gHpBar:this.bar(100*(g.hp||0)/Math.max(1,g.maxHp||100),{background:'linear-gradient(90deg,#fb7185,#e11d48)'}),
+      gVitorias:g.vitorias||0,
+      nItens:Object.values(g.inventario||{}).reduce((a,b)=>a+b,0),
+      xpHudFullClass:s.xpPing?'mp-xp-ping':'',
+      playerHudFullClass:s.hitFx==='player'?'mp-shake':'',
+      logoIcon:this.ic('sigma',19)||this.ic('calculator',18),searchIcon:this.ic('search',16),streakIcon:this.ic('flame',16),
+      brainIcon:this.ic('brain',21),wrongIcon:this.ic('circle-x',21),examIcon:this.ic('graduation-cap',21),infinityIcon:this.ic('infinity',21),learnIcon:this.ic('book-open',21),
+      swordIcon:this.ic('swords',21)||this.ic('flame',21),bagIcon:this.ic('backpack',21)||this.ic('package',21),
+      revealIcon:this.ic('eye',16),celebrateIcon:this.ic('party-popper',34),fileIcon:this.ic('file-text',14),nextIcon:this.ic('arrow-right',16),
+      playIcon:this.ic('play',15),targetIcon:this.ic('target',15),backIcon:this.ic('arrow-left',16),checkIcon:this.ic('check',16),resetIcon:this.ic('rotate-ccw',16),extIcon:this.ic('external-link',14),
+      examIntroIcon:this.ic('graduation-cap',54),timerIcon:this.ic('timer',16),listChecksIcon:this.ic('list-checks',16),penIcon:this.ic('pen-line',16),gridIcon:this.ic('layout-grid',16),awardIcon:this.ic('award',16),
+      evolutionIcon:this.ic('trending-up',16),performanceIcon:this.ic('chart-column',16),statsIcon:this.ic('zap',16),historyIcon:this.ic('scroll-text',16),achievementsIcon:this.ic('trophy',16),
+      ehMobile, naoMobile:!ehMobile, navItens,
+      irHome:()=>this.nav('home'),
+      aoPesquisar:(e)=>{this.setState({pesquisa:e.target.value,view:'home'});},
+      vHome:false,vTema:false,vPratica:false,vExame:false,vProg:false,vMateriais:false,vAprender:false,vInventario:false
+    };
+    if(!s.pronto||!D)return base;
+    const hora=new Date().getHours();
+    base.saudacao=hora<12?'Bom dia':hora<20?'Boa tarde':'Boa noite';
+    base.totalRespondidas=st.resp.t;
+    base.precisaoGlobal=st.resp.t?Math.round(100*st.resp.c/st.resp.t)+'%':'—';
+    base.nBanco=D.QUESTOES.length;
+    base.nErradasHome=st.erradas.length;
+    base.irArena=()=>{this.setState({view:'pratica'});window.scrollTo(0,0);};
+    base.irInventario=()=>{this.setState({view:'inventario'});window.scrollTo(0,0);};
+    base.irExame=()=>this.nav('exame');
+    base.irAprender=()=>this.abrirAprender(null);
+    base.vHome=s.view==='home'; base.vTema=s.view==='tema'; base.vPratica=s.view==='pratica';
+    base.vExame=s.view==='exame'; base.vProg=s.view==='progresso'; base.vMateriais=s.view==='materiais';
+    base.vAprender=s.view==='aprender'; base.vInventario=s.view==='inventario';
+    const feitasDe=(id)=>Object.values(st.licoes[id]||{}).filter(Boolean).length;
+    const filtro=s.pesquisa.trim().toLowerCase();
+    base.cursos=D.TEMAS.filter(t=>!filtro||t.titulo.toLowerCase().includes(filtro)).map(t=>{
+      const f=feitasDe(t.id), pct=Math.round(100*f/5);
+      const meta=this.temaMeta(t.id);
+      return {icone:this.ic(meta.icon,46),titulo:t.titulo,dif:t.dif,difStyle:this.difStyle(t.dif),dur:t.duracao,grad:meta.grad,
+        feitas:f,pctTxt:pct+'%',barra:this.bar(pct),
+        btn:f===0?'Começar':f===5?'Concluído — rever':'Continuar',
+        btnStyle:f===5?{border:'1px solid rgba(52,211,153,.45)',color:'#34d399',borderRadius:'10px',padding:'10px',textAlign:'center',fontWeight:'700',fontSize:'13px'}:{background:'linear-gradient(135deg,#2dd4bf,#0d9488)',borderRadius:'10px',padding:'10px',textAlign:'center',fontWeight:'700',fontSize:'13px',boxShadow:'0 3px 14px rgba(45,212,191,.24)'},
+        abrir:()=>this.abrirTema(t.id,f===5?0:Math.min(f,4))};
+    });
+    const ult=st.ultima&&D.TEMAS.find(t=>t.id===st.ultima.tema);
+    base.temUltima=!!ult&&base.vHome;
+    if(ult){
+      const f=feitasDe(ult.id);
+      const meta=this.temaMeta(ult.id);
+      base.ultimaTitulo=ult.titulo; base.ultimaIcone=this.ic(meta.icon,29); base.ultimaGrad=meta.grad;
+      base.ultimaLicao='Lição '+(st.ultima.licao+1)+' de 5 · '+this.TIPOS[st.ultima.licao].t;
+      base.ultimaBarra=this.bar(100*f/5);
+      base.ultimaAbrir=()=>this.abrirTema(ult.id,st.ultima.licao);
+    }
+    let rec=null,recPct=null;
+    D.TEMAS.forEach(t=>{const r=st.resp.porTema[t.id];if(r&&r.t>=3){const pc=r.c/r.t;if(recPct==null||pc<recPct){recPct=pc;rec=t;}}});
+    if(!rec)rec=D.TEMAS.find(t=>feitasDe(t.id)<5)||null;
+    base.temRecomendado=!!rec;
+    if(rec){
+      const meta=this.temaMeta(rec.id);
+      base.recTitulo=rec.titulo; base.recIcone=this.ic(meta.icon,29); base.recGrad=meta.grad;
+      base.recMotivo=recPct!=null?'Acertaste apenas '+Math.round(recPct*100)+'% das perguntas deste tema — vale a pena reforçar.':'Ainda tens lições por concluir neste tema.';
+      base.recAbrir=()=>this.abrirTema(rec.id,Math.min(feitasDe(rec.id),4));
+    }
+    if(base.vTema&&s.tema){
+      const t=D.TEMAS.find(x=>x.id===s.tema);
+      const feitos=st.licoes[t.id]||{};
+      const f=feitasDe(t.id), pct=Math.round(100*f/5);
+      const tipoAtual=this.TIPOS[s.licao];
+      const meta=this.temaMeta(t.id);
+      Object.assign(base,{temaTitulo:t.titulo,temaDesc:t.desc,temaIcone:this.ic(meta.icon,38),temaGrad:meta.grad,temaDif:t.dif,temaDifStyle:this.difStyle(t.dif),temaDur:t.duracao,temaPct:pct+'%',temaBarra:this.bar(pct),
+        temaCTA:f===5?'Rever zona':f===0?'Começar treino':'Continuar treino',
+        temaContinuar:()=>this.mudarLicao(f===5?0:Math.min(f,4))});
+      const bossZona=this.J&&this.J.BOSSES?this.J.BOSSES.find(b=>b.tema===t.id):null;
+      base.temBossZona=!!bossZona;
+      if(bossZona){
+        const liberado=!this.J.bossLiberado||this.J.bossLiberado(bossZona.id,(this.game().bossesMortos||[]));
+        base.bossZonaNome=liberado?bossZona.nome:(bossZona.nome+' (bloqueado)');
+        base.desafiarBossZona=()=>this.iniciarBoss(bossZona.id);
+      }
+      base.curriculo=this.TIPOS.map((tp,i)=>{
+        const done=!!feitos[tp.id], atual=i===s.licao;
+        return {titulo:tp.t,sub:tp.sub,icone:this.ic(done?'check':atual?'play':'lock',done?14:12),
+          icStyle:{width:'30px',height:'30px',borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',fontSize:done?'14px':'12px',fontWeight:'800',flexShrink:0,
+            background:done?'rgba(52,211,153,.15)':atual?'linear-gradient(135deg,#2dd4bf,#0d9488)':'#2a3a52',
+            color:done?'#34d399':atual?'#fff':'#8b9bb4',border:done?'1px solid rgba(52,211,153,.4)':'none'},
+          style:{display:'flex',alignItems:'center',gap:'12px',padding:'10px 10px',borderRadius:'12px',cursor:'pointer',transition:'all .15s',
+            background:atual?'rgba(45,212,191,.12)':'transparent',border:atual?'1px solid rgba(45,212,191,.35)':'1px solid transparent',
+            color:atual?'#fff':done?'#e8eef7':'#8b9bb4'},
+          abrir:()=>this.mudarLicao(i)};
+      });
+      base.licaoTipo=tipoAtual.t; base.licaoIc=this.ic(tipoAtual.ic,15);
+      base.licaoTitulo=tipoAtual.id==='teoria'?'Conceitos essenciais':tipoAtual.id==='formulas'?'Formulário do tema':tipoAtual.id==='exemplos'?'Exemplo resolvido passo a passo':tipoAtual.id==='erros'?'Os erros que custam pontos':'Testa o que aprendeste';
+      base.isTeoria=tipoAtual.id==='teoria'; base.isFormulas=tipoAtual.id==='formulas';
+      base.isExemplo=tipoAtual.id==='exemplos'; base.isErros=tipoAtual.id==='erros'; base.isMiniQuiz=tipoAtual.id==='quiz';
+      if(base.isTeoria){
+        base.teoriaParas=t.teoria.map(p=>({c:this.mx(p)}));
+        const vid=t.video;
+        base.temVideoTema=!!(vid&&vid.id);
+        if(base.temVideoTema){
+          base.videoTemaTitulo=vid.titulo; base.videoTemaCanal=vid.canal;
+          base.videoTemaEmbed=this.ytEmbed(vid,{contexto:'teoria',tema:t.id});
+          base.abrirVideoTema=()=>this.abrirYt(vid,{contexto:'teoria',tema:t.id});
+        }
+      }
+      if(base.isFormulas)base.formulasLista=t.formulas.map(fm=>({n:fm.n,c:this.mx(fm.t)}));
+      if(base.isExemplo){
+        base.exemploEnunciado=this.mx(t.exemplo.e);
+        const n=t.exemplo.passos.length;
+        base.passosVisiveis=t.exemplo.passos.slice(0,s.rev).map((p,i)=>({n:i+1,t:p.t,c:this.mx(p.c)}));
+        base.temMaisPassos=s.rev<n; base.proximoPasso=s.rev+1; base.totalPassos=n;
+        base.exemploCompleto=s.rev>=n;
+        base.revelarPasso=()=>{const nv=s.rev+1;this.setState({rev:nv});if(nv>=n)this.marcarLicao(t.id,'exemplos');};
+      }
+      if(base.isErros)base.errosLista=t.erros.map(er=>({e:this.mx(er.e),c:this.mx(er.c)}));
+      if(base.isMiniQuiz){
+        setTimeout(()=>this.mqGarantir(),0);
+        const qs=this.mqPerguntas();
+        base.mqTerminado=s.mq.fim; base.mqAtiva=!s.mq.fim&&!!s.mq.prep;
+        base.mqTotal=qs.length; base.mqNum=s.mq.i+1; base.mqCertas=s.mq.certas;
+        if(s.mq.prep){
+          const p=s.mq.prep, resp=s.mq.sel!=null;
+          base.mqCorpo=this.mx(p.q.q);
+          base.mqOps=p.ops.map((op,i)=>{
+            let est='';
+            if(resp){est=i===p.c?'certa':i===s.mq.sel?'errada':'dim';}
+            return {letra:'ABCD'[i],c:this.mx(op),style:this.optStyle(est),letraStyle:this.letraStyle(est),escolher:()=>this.mqResponder(i)};
+          });
+          base.mqRespondida=resp;
+          if(resp){
+            const ok=s.mq.sel===p.c;
+            base.mqFeedTitulo=ok?'Correto!':'Errado — a resposta certa é a '+'ABCD'[p.c];
+            base.mqFeedStyle={marginTop:'14px',borderRadius:'13px',padding:'15px 17px',border:'1px solid '+(ok?'rgba(34,197,94,.4)':'rgba(239,68,68,.4)'),background:ok?'rgba(34,197,94,.08)':'rgba(239,68,68,.07)',color:ok?'#4ade80':'#f87171'};
+            base.mqPassos=p.q.passos.map(x=>({c:this.mx(x)}));
+            base.mqErro=!ok;
+            if(!ok){
+              const ex=this.explicacaoErro(p.q,s.mq.sel);
+              base.mqErroPorque=ex.porque;
+              base.mqErroDica=ex.dica;
+              base.mqAbrirVideo=()=>{if(ex.video)this.abrirYt(ex.video,{contexto:'erro_miniquiz',tema:p.q.tema});};
+            }
+            base.mqBtnProx=s.mq.i+1>=qs.length?'Terminar mini-quiz':'Próxima pergunta';
+            base.mqProxima=()=>this.mqProxima();
+          }
+        }
+        if(s.mq.fim){
+          base.mqResultado=s.mq.certas+' de '+qs.length+' certas';
+          base.mqEmoji=this.ic(s.mq.certas===qs.length?'trophy':s.mq.certas>=qs.length/2?'thumbs-up':'book-open',38);
+          base.mqRecomecar=()=>this.setState({mq:{i:0,prep:null,sel:null,certas:0,fim:false}});
+        }
+      }
+      const done=!!feitos[tipoAtual.id];
+      base.podeConcluir=!done&&['teoria','formulas','erros'].includes(tipoAtual.id);
+      base.concluirLicao=()=>{this.marcarLicao(t.id,tipoAtual.id);this.avisar('Lição concluída');if(s.licao<4)this.mudarLicao(s.licao+1);};
+      base.temAnterior=s.licao>0; base.temProxima=s.licao<4;
+      base.licaoAnterior=()=>this.mudarLicao(s.licao-1);
+      base.licaoProxima=()=>this.mudarLicao(s.licao+1);
+    }
+    if(base.vPratica){
+      const J=this.J;
+      const gg=this.game();
+      const combate=gg.combate;
+      base.arenaMapa=!combate;
+      base.arenaCombate=!!combate;
+      base.fugirBoss=()=>this.fugirBoss();
+      base.voltarMapaBoss=()=>this.fugirBoss();
+      base.retryBoss=()=>{if(combate)this.iniciarBoss(combate.bossId);};
+      if(J&&J.BOSSES){
+        base.listaBosses=J.BOSSES.map(b=>{
+          const morto=(gg.bossesMortos||[]).includes(b.id);
+          const bloqueado=J.bossLiberado?!J.bossLiberado(b.id,gg.bossesMortos||[]):false;
+          const ant=J.bossAnterior?J.bossAnterior(b.id):null;
+          const drop=J.itemPorId(b.drop);
+          return {
+            nome:b.nome,titulo:b.titulo,lore:b.lore,hp:b.hp,nivelMin:b.nivelMin,grad:b.grad,
+            icone:this.ic(b.icone,36),morto,bloqueado,
+            lockTxt:ant?'Derrota '+ant.nome:'Bloqueado',
+            dropNome:drop?drop.nome:b.drop,
+            cardStyle:{background:'#121c2e',border:'1px solid '+(morto?'rgba(52,211,153,.45)':'#2a3a52'),borderRadius:'16px',overflow:'hidden',cursor:bloqueado?'not-allowed':'pointer',opacity:bloqueado?.55:1},
+            abrir:()=>{if(!bloqueado)this.iniciarBoss(b.id);}
+          };
+        });
+      } else base.listaBosses=[];
+      if(combate&&J){
+        const boss=J.bossPorId(combate.bossId);
+        base.bossNome=boss?boss.nome:'Boss';
+        base.bossTitulo=boss?boss.titulo:'';
+        base.bossGrad=boss?boss.grad:'linear-gradient(135deg,#2dd4bf,#0d9488)';
+        base.bossIcone=this.ic(boss?boss.icone:'swords',32);
+        base.bossIconeBig=this.ic(boss?boss.icone:'swords',52);
+        base.bossHpTxt=combate.bossHp+'/'+combate.bossMax;
+        base.bossHpBar=this.bar(100*combate.bossHp/Math.max(1,combate.bossMax),{background:'linear-gradient(90deg,#fda4af,#e11d48)',boxShadow:'0 0 14px rgba(225,29,72,.7)'});
+        base.combateAtivo=combate.fase==='ativo';
+        base.combateVitoria=combate.fase==='vitoria';
+        base.combateDerrota=combate.fase==='derrota';
+        base.combateAjudaTxt=combate.usouAjuda?'Usaste ajuda · loot off (aura freemium)':'No helps = loot garantido';
+        base.vitoriaTitulo=combate.vitoriaTitulo||'Boss deleted. Aura infinita.';
+        base.vitoriaTxt=combate.vitoriaTxt||'Aura maxed.';
+        base.derrotaTitulo=combate.derrotaTitulo||'Aura a 0… foste.';
+        base.derrotaTxt=combate.derrotaTxt||'Farma a zona, recupera aura e volta. O HP já resetou.';
+        base.combateLogLinha=combate.log||'Hora de farmar aura — acerta e dá hit!';
+        base.hitPanelClass=s.hitFx==='boss'?'mp-boss-hit':s.hitFx==='player'?'mp-player-hit':'';
+        base.combatPanelClass=('mp-combat-panel '+(base.hitPanelClass||'')).trim();
+        base.bossAvatarFullClass=('mp-boss-avatar '+(s.hitFx==='boss'?'hit':'')).trim();
+        base.slashFullClass=('mp-slash '+(s.slashOn?'on':'')).trim();
+        base.playerHudFullClass=s.hitFx==='player'?'mp-shake':'';
+        base.xpHudFullClass=s.xpPing?'mp-xp-ping':'';
+        // reforça glow da barra do herói no combate
+        base.gHpBar=this.bar(100*(gg.hp||0)/Math.max(1,gg.maxHp||100),{background:'linear-gradient(90deg,#86efac,#16a34a)',boxShadow:'0 0 14px rgba(34,197,94,.55)'});
+        const aids=['dica50','escudo','passo','foco','formula','elixir'].filter(id=>(gg.inventario[id]||0)>0);
+        base.temAjudasBar=aids.length>0;
+        base.ajudasCombate=aids.map(id=>{
+          const it=J.itemPorId(id);
+          return {rot:this.iconText(it.icone,(it.nome+' ×'+(gg.inventario[id]||0)),14),style:this.chip(false,'#fbbf24'),usar:()=>this.usarItem(id)};
+        });
+        base.temAjudaAtiva=!!s.ajudaHint;
+        base.ajudaAtivaTxt=s.ajudaHint||'';
+        if(combate.fase==='ativo'){
+          if(!s.q)setTimeout(()=>{if(!this.state.q&&this.game().combate&&this.game().combate.fase==='ativo')this.novaPergunta();},0);
+          base.temPergunta=!!s.q;
+          if(s.q){
+            const p=s.q, q=p.q, resp=s.qSel!=null;
+            const t=D.TEMAS.find(x=>x.id===q.tema);
+            base.qTema=this.iconText(this.temaMeta(t.id).icon,t.titulo,14);
+            base.qDif=q.dif; base.qDifStyle=this.difStyle(q.dif);
+            base.qXp=(J.xpPorAcerto?J.xpPorAcerto(q.dif):15);
+            base.qCorpo=this.mx(q.q);
+            base.qOps=p.ops.map((op,i)=>{
+              if((s.opsHide||[]).includes(i)&&!resp)return null;
+              let est='';
+              if(resp){est=i===p.c?'certa':i===s.qSel?'errada':'dim';}
+              return {letra:'ABCD'[i],c:this.mx(op),style:this.optStyle(est),letraStyle:this.letraStyle(est),escolher:()=>this.responder(i)};
+            }).filter(Boolean);
+            base.qRespondida=resp;
+            if(resp){
+              const ok=s.qSel===p.c;
+              base.qFeedTitulo=combate.feedTitulo||(ok?'67 — farmaste aura!':'Aura drain… boss regenerou');
+              base.qFeedStyle={marginTop:'16px',borderRadius:'13px',padding:'16px 18px',border:'1px solid '+(ok?'rgba(34,197,94,.4)':'rgba(239,68,68,.4)'),background:ok?'rgba(34,197,94,.08)':'rgba(239,68,68,.07)',color:ok?'#4ade80':'#f87171'};
+              base.qPassos=q.passos.map((x,i)=>({n:i+1,c:this.mx(x)}));
+              base.qErro=!ok;
+              if(!ok){
+                const ex=this.explicacaoErro(q,s.qSel);
+                base.qErroPorque=ex.porque;
+                base.qErroDica=ex.dica;
+                base.qVideoTitulo=ex.titulo.length>48?ex.titulo.slice(0,46)+'…':ex.titulo;
+                base.abrirVideoErro=()=>{if(ex.video)this.abrirYt(ex.video,{contexto:'erro_combate',tema:q.tema});};
+              }
+              base.proximaPergunta=()=>{
+                const c2=this.game().combate;
+                if(c2&&c2.fase==='ativo')this.novaPergunta();
+                else this.forceUpdate();
+              };
+            }
+          }
+        }
+      }
+      base.temDmgFloat=!!s.dmgFloat;
+      if(s.dmgFloat){
+        base.dmgFloatTxt=s.dmgFloat.txt;
+        base.dmgFloatStyle=s.dmgFloat.style||{right:'24px',top:'18px',color:s.dmgFloat.cor||'#2dd4bf'};
+      }
+      if(!base.combatPanelClass)base.combatPanelClass='mp-combat-panel';
+      if(!base.bossAvatarFullClass)base.bossAvatarFullClass='mp-boss-avatar';
+      if(!base.slashFullClass)base.slashFullClass='mp-slash';
+      if(base.playerHudFullClass==null)base.playerHudFullClass='';
+      if(base.xpHudFullClass==null)base.xpHudFullClass=s.xpPing?'mp-xp-ping':'';
+    }
+    if(base.vInventario){
+      const J=this.J; const gg=this.game();
+      const ids=Object.keys(gg.inventario||{}).filter(id=>(gg.inventario[id]||0)>0);
+      base.invVazio=!ids.length;
+      base.listaItens=ids.map(id=>{
+        const it=J&&J.itemPorId(id);
+        return {nome:it?it.nome:id,desc:it?it.desc:'',qtd:gg.inventario[id],raridade:it?it.raridade:'comum',ic:this.ic(it?it.icone:'package',20)};
+      });
+    }
+    if(base.vAprender){
+      const filtro=s.pesquisa.trim().toLowerCase();
+      base.aprLista=!s.aprTema;
+      base.aprDetalhe=!!s.aprTema;
+      base.aprTemas=D.TEMAS.filter(t=>!filtro||t.titulo.toLowerCase().includes(filtro)||(t.desc||'').toLowerCase().includes(filtro)).map(t=>{
+        const meta=this.temaMeta(t.id);
+        return {titulo:t.titulo,desc:t.desc,dif:t.dif,difStyle:this.difStyle(t.dif),dur:t.duracao,grad:meta.grad,icone:this.ic(meta.icon,40),
+          abrir:()=>this.abrirAprender(t.id)};
+      });
+      base.aprVoltar=()=>this.abrirAprender(null);
+      if(s.aprTema){
+        const t=D.TEMAS.find(x=>x.id===s.aprTema);
+        if(t){
+          const meta=this.temaMeta(t.id);
+          const vid=t.video||{};
+          Object.assign(base,{
+            aprTitulo:t.titulo,aprDesc:t.desc,aprDif:t.dif,aprDifStyle:this.difStyle(t.dif),
+            aprGrad:meta.grad,aprIcone:this.ic(meta.icon,32),
+            aprParas:t.teoria.map(p=>({c:this.mx(p)})),
+            aprVideoTitulo:vid.titulo||'Vídeo-aula',aprVideoCanal:vid.canal||'',
+            aprVideoEmbed:this.ytEmbed(vid,{contexto:'aprender',tema:t.id}),
+            aprAbrirYt:()=>this.abrirYt(vid,{contexto:'aprender',tema:t.id}),
+            aprAbrirCurso:()=>this.abrirTema(t.id,0)
+          });
+        }
+      }
+    }
+    if(base.vMateriais){
+      const mats=D.MATERIAIS||[];
+      const tipos=[{id:'todos',rot:'Todos'},{id:'teoria',rot:this.iconText('book-open','Teoria')},{id:'exercicio',rot:this.iconText('pencil','Exercícios')},{id:'exame',rot:this.iconText('graduation-cap','Exames')},{id:'formulario',rot:this.iconText('scroll-text','Formulário')}];
+      base.filtrosMat=tipos.map(t=>({rot:t.rot,style:this.chip(s.filtMat===t.id),escolher:()=>{this.setState({filtMat:t.id,matSel:null});}}));
+      const ics={teoria:'book-open',exercicio:'pencil',exame:'graduation-cap',formulario:'scroll-text'};
+      const rot={teoria:'Teoria',exercicio:'Exercícios',exame:'Exame',formulario:'Formulário'};
+      const lista=mats.filter(m=>s.filtMat==='todos'||m.tipo===s.filtMat);
+      const sel=s.matSel&&mats.find(m=>m.id===s.matSel);
+      base.matDetalhe=!!sel;
+      base.matFechar=()=>this.setState({matSel:null});
+      if(sel){
+        const tema=sel.tema&&D.TEMAS.find(t=>t.id===sel.tema);
+        const vid=sel.video||{};
+        base.matTitulo=sel.titulo; base.matFicheiro=sel.ficheiro;
+        base.matTipoRot=rot[sel.tipo]||sel.tipo;
+        base.matTagStyle={fontSize:'11px',fontWeight:'800',borderRadius:'999px',padding:'3px 10px',background:'rgba(45,212,191,.12)',color:'#2dd4bf',border:'1px solid rgba(45,212,191,.28)'};
+        base.matTemaRot=tema?tema.titulo:(sel.tema?sel.tema:'Geral / vários temas');
+        base.matVideoTitulo=vid.titulo||'Vídeo-aula'; base.matVideoCanal=vid.canal||'';
+        base.matVideoEmbed=this.ytEmbed(vid,{contexto:'material',tema:sel.tema,materialId:sel.id});
+        base.matAbrirYt=()=>this.abrirYt(vid,{contexto:'material',tema:sel.tema,materialId:sel.id});
+        base.matTemTema=!!tema;
+        base.matIrAprender=()=>this.abrirAprender(sel.tema);
+      }
+      base.listaMateriais=lista.map(m=>{
+        const tema=m.tema&&D.TEMAS.find(t=>t.id===m.tema);
+        const vid=m.video;
+        return {ic:this.ic(ics[m.tipo]||'file-text',20),titulo:m.titulo,temaRot:tema?this.iconText(this.temaMeta(tema.id).icon,tema.titulo,13):(m.tema?m.tema:'Geral / vários temas'),
+          tipoRot:rot[m.tipo]||m.tipo,
+          videoHint:vid&&vid.titulo?('Vídeo: '+(vid.titulo.length>42?vid.titulo.slice(0,42)+'…':vid.titulo)):'Ver vídeo',
+          tagStyle:{fontSize:'11px',fontWeight:'800',borderRadius:'999px',padding:'3px 10px',background:'rgba(45,212,191,.12)',color:'#2dd4bf',border:'1px solid rgba(45,212,191,.28)'},
+          abrir:()=>{this.setState({matSel:m.id});window.scrollTo(0,0);this.track('material_aberto',{tema:m.tema,material_id:m.id,meta:{tipo:m.tipo,titulo:m.titulo,video:m.video&&m.video.id}});}};
+      });
+    }
+    if(base.vExame){
+      const e=s.ex;
+      base.exIntro=!e; base.exDecorrer=!!e&&e.fase==='decorrer';
+      base.exCorrecao=!!e&&e.fase==='correcao'; base.exResultado=!!e&&e.fase==='resultado';
+      base.exMinutos=this.props.minutosExame??90;
+      const melhor=st.exames.length?Math.max(...st.exames.map(x=>x.nota)):null;
+      base.temMelhorNota=melhor!=null; base.melhorNota=melhor!=null?this.fmtNota(melhor):'';
+      base.iniciarExame=()=>this.iniciarExame();
+      if(e&&e.fase==='decorrer'){
+        base.exTempo=this.fmtTempo(e.seg);
+        const pouco=e.seg<300;
+        base.exTempoStyle={fontWeight:'800',fontSize:'16px',fontVariantNumeric:'tabular-nums',color:pouco?'#fb7185':'#2dd4bf',background:pouco?'rgba(251,113,133,.1)':'rgba(45,212,191,.1)',border:'1px solid '+(pouco?'rgba(251,113,133,.4)':'rgba(45,212,191,.3)'),borderRadius:'10px',padding:'7px 13px'};
+        base.exNav=Array.from({length:11},(_,i)=>{
+          const respondida=i<8?e.resGI[i]!=null:e.resGII[i-8].trim().length>0;
+          const atual=i===e.i;
+          return {rot:String(i+1),ir:()=>this.exSet('i',i),
+            style:{width:'30px',height:'30px',borderRadius:'8px',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'12px',fontWeight:'800',cursor:'pointer',
+              background:atual?'linear-gradient(135deg,#2dd4bf,#0d9488)':respondida?'rgba(45,212,191,.16)':'#182338',
+              color:atual?'#fff':respondida?'#2dd4bf':'#8b9bb4',
+              border:atual?'1px solid transparent':respondida?'1px solid rgba(45,212,191,.3)':'1px solid #2a3a52'}};
+        });
+        base.terminarExame=()=>this.terminarExame();
+        base.exNum=e.i+1; base.exEhGI=e.i<8; base.exEhGII=e.i>=8;
+        base.exGrupo=e.i<8?'Grupo I · Escolha múltipla':'Grupo II · Desenvolvimento';
+        if(e.i<8){
+          const p=e.gi[e.i];
+          base.exCorpo=this.mx(p.q.q);
+          base.exOps=p.ops.map((op,i)=>{
+            const sel=e.resGI[e.i]===i;
+            return {letra:'ABCD'[i],c:this.mx(op),style:this.optStyle(sel?'sel':''),letraStyle:this.letraStyle(sel?'sel':''),
+              escolher:()=>{const r=e.resGI.slice();r[e.i]=i;this.exSet('resGI',r);}};
+          });
+        } else {
+          const j=e.i-8;
+          base.exCorpo=this.mx(e.ab[j].q);
+          base.exTexto=e.resGII[j];
+          base.exEscrever=(ev)=>{const r=e.resGII.slice();r[j]=ev.target.value;this.exSet('resGII',r);};
+        }
+        base.exTemAnt=e.i>0; base.exTemProx=e.i<10;
+        base.exAnterior=()=>this.exSet('i',e.i-1);
+        base.exProxima=()=>this.exSet('i',e.i+1);
+      }
+      if(e&&e.fase==='correcao'){
+        base.corGI=e.gi.map((p,i)=>{
+          const ok=e.resGI[i]===p.c;
+          return {n:i+1,corpo:this.mx(p.q.q),
+            tua:e.resGI[i]!=null?'ABCD'[e.resGI[i]]:'—',certa:'ABCD'[p.c],
+            tag:ok?'Certa':'Errada',
+            tagStyle:{fontSize:'11px',fontWeight:'800',borderRadius:'999px',padding:'3px 10px',flexShrink:0,background:ok?'rgba(34,197,94,.12)':'rgba(239,68,68,.12)',color:ok?'#4ade80':'#f87171',border:'1px solid '+(ok?'rgba(34,197,94,.4)':'rgba(239,68,68,.4)')},
+            style:{background:'#121c2e',border:'1px solid '+(ok?'rgba(34,197,94,.3)':'rgba(239,68,68,.3)'),borderRadius:'15px',padding:'16px 18px'}};
+        });
+        const rotAval=['0% — Errei','50% — Parcial','100% — Acertei'];
+        base.corGII=e.ab.map((a,j)=>({n:j+9,corpo:this.mx(a.q),resposta:e.resGII[j].trim()||'— (sem resposta)',res:this.mx(a.res),
+          botoes:[0,.5,1].map((v,k)=>({rot:rotAval[k],escolher:()=>{const av=e.aval.slice();av[j]=v;this.exSet('aval',av);},
+            style:this.chip(e.aval[j]===v,v===0?'#f87171':v===0.5?'#fbbf24':'#4ade80')}))}));
+        const prontas=!e.aval.some(a=>a==null);
+        base.verResultadoRot=prontas?'Ver resultado final':'Autoavalia as 3 perguntas para veres a nota';
+        base.verResultadoStyle={marginTop:'22px',background:prontas?'linear-gradient(135deg,#2dd4bf,#0d9488)':'#2a3a52',color:prontas?'#fff':'#6b6480',borderRadius:'13px',padding:'15px',textAlign:'center',fontWeight:'800',fontSize:'15px',cursor:prontas?'pointer':'default',boxShadow:prontas?'0 5px 24px rgba(45,212,191,.3)':'none'};
+        base.verResultado=()=>this.verResultado();
+      }
+      if(e&&e.fase==='resultado'){
+        base.resNota=this.fmtNota(e.nota);
+        base.resEmoji=this.ic(e.nota>=17?'trophy':e.nota>=9.5?'party-popper':'book-open',52);
+        const aprovado=e.nota>=9.5;
+        base.resLabel=aprovado?'Aprovado':'Reprovado — continua a praticar';
+        base.resLabelStyle={display:'inline-block',marginTop:'10px',borderRadius:'999px',padding:'6px 16px',fontSize:'13px',fontWeight:'800',background:aprovado?'rgba(34,197,94,.12)':'rgba(239,68,68,.12)',color:aprovado?'#4ade80':'#f87171',border:'1px solid '+(aprovado?'rgba(34,197,94,.4)':'rgba(239,68,68,.4)')};
+        base.resGI=this.fmtNota(e.pGI); base.resGII=this.fmtNota(e.pGII);
+        base.resTempo=this.fmtTempo(e.total-e.seg);
+        base.voltarCorrecao=()=>this.exSet('fase','correcao');
+        base.sairExame=()=>{this.setState({ex:null,view:'home'});window.scrollTo(0,0);};
+      }
+    }
+    if(base.vProg){
+      base.temExames=st.exames.length>0; base.semExames=!st.exames.length;
+      base.evolucao=st.exames.slice(-8).map((x,i)=>({nota:this.fmtNota(x.nota),rot:x.d,
+        barra:{width:'100%',maxWidth:'38px',height:Math.max(4,x.nota/20*100)+'%',background:'linear-gradient(180deg,#2dd4bf,#0d9488)',borderRadius:'6px 6px 3px 3px',boxShadow:'0 0 12px rgba(45,212,191,.3)'}}));
+      base.temaBarras=D.TEMAS.map(t=>{
+        const r=st.resp.porTema[t.id];
+        const pct=r&&r.t?Math.round(100*r.c/r.t):null;
+        const cor=pct==null?'#6b6480':pct>=70?'#4ade80':pct>=40?'#fbbf24':'#f87171';
+        return {icone:this.ic(this.temaMeta(t.id).icon,16),titulo:t.titulo.length>26?t.titulo.slice(0,24)+'…':t.titulo,
+          pct:pct==null?'—':pct+'%',pctStyle:{color:cor,fontWeight:'800'},
+          barra:this.bar(pct||0,{background:pct==null?'transparent':pct>=70?'#22c55e':pct>=40?'#f59e0b':'#ef4444'})};
+      });
+      base.tempoMedio=st.resp.t?Math.round(st.resp.tempo/st.resp.t)+' s':'—';
+      base.maxSeq=st.resp.maxSeq;
+      base.licoesFeitas=D.TEMAS.reduce((n,t)=>n+Object.values(st.licoes[t.id]||{}).filter(Boolean).length,0);
+      base.nExames=st.exames.length; base.nRever=st.rever.length;
+      base.historico=st.exames.slice().reverse().map(x=>({data:x.d,nota:this.fmtNota(x.nota),
+        notaStyle:{fontWeight:'800',fontSize:'13px',borderRadius:'999px',padding:'4px 12px',background:x.nota>=9.5?'rgba(34,197,94,.12)':'rgba(239,68,68,.12)',color:x.nota>=9.5?'#4ade80':'#f87171'}}));
+      const temaCompleto=D.TEMAS.some(t=>Object.values(st.licoes[t.id]||{}).filter(Boolean).length===5);
+      const gProg=this.game();
+      const defs=[
+        {ic:'swords',t:'Primeiro boss',d:'Derrota o teu primeiro boss na Arena',on:(gProg.vitorias||0)>=1},
+        {ic:'backpack',t:'Primeiro loot',d:'Ganha um item sem usar ajudas',on:Object.values(gProg.inventario||{}).some(n=>n>0)},
+        {ic:'flame',t:'5 dias seguidos',d:'Estuda 5 dias consecutivos',on:st.streak>=5},
+        {ic:'hash',t:'100 perguntas',d:'Responde a 100 perguntas',on:st.resp.t>=100},
+        {ic:'target',t:'10 seguidas',d:'Acerta 10 perguntas seguidas',on:st.resp.maxSeq>=10},
+        {ic:'crown',t:'Nível 5',d:'Chega ao nível 5 do jogador',on:(gProg.nivel||1)>=5},
+        {ic:'book-check',t:'Primeira zona',d:'Conclui as 5 lições de um tema',on:temaCompleto},
+        {ic:'graduation-cap',t:'Primeiro exame',d:'Termina uma simulação de exame',on:st.exames.length>0},
+        {ic:'trophy',t:'Overlord',d:'Derrota o Overlord do Exame',on:(gProg.bossesMortos||[]).includes('b9')}];
+      base.conquistas=defs.map(c=>({ic:this.ic(c.ic,26),t:c.t,d:c.d,
+        style:{background:c.on?'rgba(45,212,191,.1)':'#182338',border:'1px solid '+(c.on?'rgba(45,212,191,.35)':'#2a3a52'),borderRadius:'13px',padding:'14px 12px',textAlign:'center',opacity:c.on?1:.45,filter:c.on?'none':'grayscale(.8)',boxShadow:c.on?'0 0 18px rgba(45,212,191,.12)':'none'}}));
+    }
+    return base;
+  }
+}
+</script>
+</body>
+</html>

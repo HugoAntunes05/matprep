@@ -1,0 +1,22 @@
+{
+  "name": "matprep",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Plataforma de estudo Tópicos de Matemática — Supabase + Railway",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "seed": "node scripts/seed.mjs",
+    "db:push": "npx supabase db push",
+    "db:link": "npx supabase link --project-ref rnxyxernvliyxpwldjee"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.50.0",
+    "dotenv": "^16.5.0",
+    "express": "^4.21.2"
+  }
+}
