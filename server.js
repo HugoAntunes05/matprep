@@ -28,6 +28,28 @@ function adminSb() {
   });
 }
 
+function clientIp(req) {
+  const cf = req.headers['cf-connecting-ip'];
+  if (cf) return String(cf).split(',')[0].trim();
+  const xff = req.headers['x-forwarded-for'];
+  if (xff) return String(xff).split(',')[0].trim();
+  const real = req.headers['x-real-ip'];
+  if (real) return String(real).trim();
+  return (req.socket && req.socket.remoteAddress) || null;
+}
+
+async function userFromBearer(req) {
+  const hdr = req.headers.authorization || '';
+  const token = hdr.startsWith('Bearer ') ? hdr.slice(7) : '';
+  if (!token) return null;
+  const sb = createClient(supabaseUrl, supabaseKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+  const { data, error } = await sb.auth.getUser(token);
+  if (error || !data || !data.user) return null;
+  return data.user;
+}
+
 function issueToken() {
   const token = crypto.randomBytes(32).toString('hex');
   adminTokens.set(token, Date.now() + 12 * 60 * 60 * 1000);
@@ -77,6 +99,61 @@ app.get('/admin', (_req, res) => {
 });
 app.get('/backoffice', (_req, res) => {
   res.sendFile(path.join(ROOT, 'admin.html'));
+});
+
+/** Regista evento com IP real (Cloudflare / proxy) */
+app.post('/api/aluno/track', async (req, res) => {
+  try {
+    const user = await userFromBearer(req);
+    if (!user) return res.status(401).json({ error: 'Sem sessão.' });
+    const body = req.body || {};
+    const ip = clientIp(req);
+    const row = {
+      user_id: user.id,
+      tipo: String(body.tipo || 'evento'),
+      tema: body.tema || null,
+      licao: body.licao || null,
+      questao_id: body.questao_id || null,
+      material_id: body.material_id || null,
+      video_id: body.video_id || null,
+      segundos: Number(body.segundos) || 0,
+      meta: body.meta && typeof body.meta === 'object' ? body.meta : {},
+      ip,
+    };
+    const sb = adminSb();
+    if (sb) {
+      const { error } = await sb.from('atividade_eventos').insert(row);
+      if (error) throw error;
+      await sb.from('aluno_metricas').upsert(
+        {
+          user_id: user.id,
+          ultimo_ip: ip,
+          ultimo_acesso: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: 'user_id' }
+      );
+    } else {
+      // sem service role: tenta insert direto com o JWT do aluno (sem coluna ip se falhar)
+      const userSb = createClient(supabaseUrl, supabaseKey, {
+        global: { headers: { Authorization: req.headers.authorization } },
+        auth: { persistSession: false, autoRefreshToken: false },
+      });
+      const { error } = await userSb.from('atividade_eventos').insert(row);
+      if (error) {
+        delete row.ip;
+        const r2 = await userSb.from('atividade_eventos').insert(row);
+        if (r2.error) throw r2.error;
+      }
+    }
+    res.json({ ok: true, ip });
+  } catch (e) {
+    res.status(500).json({ error: e.message || String(e) });
+  }
+});
+
+app.get('/api/aluno/ip', (req, res) => {
+  res.json({ ip: clientIp(req) });
 });
 
 app.post('/api/admin/login', (req, res) => {
@@ -131,7 +208,33 @@ app.get('/api/admin/alunos', requireAdmin, async (_req, res) => {
       .select('*')
       .order('ultimo_acesso', { ascending: false, nullsFirst: false });
     if (error) throw error;
-    res.json({ alunos: data || [] });
+    const list = (data || []).slice().sort((a, b) => {
+      const fa = a.favorito ? 1 : 0;
+      const fb = b.favorito ? 1 : 0;
+      if (fa !== fb) return fb - fa;
+      const ta = a.ultimo_acesso ? new Date(a.ultimo_acesso).getTime() : 0;
+      const tb = b.ultimo_acesso ? new Date(b.ultimo_acesso).getTime() : 0;
+      return tb - ta;
+    });
+    res.json({ alunos: list });
+  } catch (e) {
+    res.status(500).json({ error: e.message || String(e) });
+  }
+});
+
+app.post('/api/admin/alunos/:id/favorito', requireAdmin, async (req, res) => {
+  const sb = adminSb();
+  const id = req.params.id;
+  try {
+    const { data: existing } = await sb.from('admin_favoritos').select('user_id').eq('user_id', id).maybeSingle();
+    if (existing) {
+      const { error } = await sb.from('admin_favoritos').delete().eq('user_id', id);
+      if (error) throw error;
+      return res.json({ favorito: false });
+    }
+    const { error } = await sb.from('admin_favoritos').insert({ user_id: id });
+    if (error) throw error;
+    res.json({ favorito: true });
   } catch (e) {
     res.status(500).json({ error: e.message || String(e) });
   }

@@ -1029,8 +1029,26 @@ class Component extends DCLogic {
         segundos:payload.segundos||0,
         meta:payload.meta||{}
       };
-      const {error}=await sb.from('atividade_eventos').insert(row);
-      if(error)console.warn('track',tipo,error.message);
+      let viaServer=false;
+      try{
+        const {data:{session}}=await sb.auth.getSession();
+        if(session&&session.access_token){
+          const r=await fetch('/api/aluno/track',{
+            method:'POST',
+            headers:{'Content-Type':'application/json',Authorization:'Bearer '+session.access_token},
+            body:JSON.stringify({tipo,tema:row.tema,licao:row.licao,questao_id:row.questao_id,material_id:row.material_id,video_id:row.video_id,segundos:row.segundos,meta:row.meta})
+          });
+          if(r.ok){
+            viaServer=true;
+            const j=await r.json().catch(()=>({}));
+            if(j.ip)this._clientIp=j.ip;
+          }
+        }
+      }catch(_){}
+      if(!viaServer){
+        const {error}=await sb.from('atividade_eventos').insert(row);
+        if(error)console.warn('track',tipo,error.message);
+      }
       await this.bumpMetricas(tipo, payload);
     }catch(e){console.warn('track err',e);}
   }

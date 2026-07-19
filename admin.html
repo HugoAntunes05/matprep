@@ -60,7 +60,10 @@ tr.active td{background:rgba(45,212,191,.12)}
 .empty{padding:28px;text-align:center;color:var(--muted)}
 .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
 .toolbar input{max-width:260px}
-.badge-ok{color:var(--ok)} .badge-bad{color:var(--rose)} .badge-warn{color:var(--amber)}
+.star{border:0;background:transparent;cursor:pointer;font-size:18px;line-height:1;padding:2px 4px;color:#4b5568}
+.star.on{color:var(--amber);filter:drop-shadow(0 0 6px rgba(251,191,36,.45))}
+.ip{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;color:var(--blue)}
+.fav-pill{border-color:rgba(251,191,36,.45);color:var(--amber);background:rgba(251,191,36,.12)}
 </style>
 </head>
 <body>
@@ -96,12 +99,15 @@ tr.active td{background:rgba(45,212,191,.12)}
     <div class="card">
       <div class="h2">Alunos</div>
       <div class="toolbar">
-        <input id="searchAluno" type="search" placeholder="Pesquisar nome / id…">
+        <input id="searchAluno" type="search" placeholder="Pesquisar nome / IP / id…">
+        <label class="tiny" style="display:inline-flex;align-items:center;gap:6px;white-space:nowrap;cursor:pointer">
+          <input id="onlyFav" type="checkbox"> Só favoritos
+        </label>
       </div>
       <div style="max-height:640px;overflow:auto">
         <table>
           <thead>
-            <tr><th>Aluno</th><th>Estudo</th><th>Vídeo</th><th>%</th></tr>
+            <tr><th></th><th>Aluno</th><th>IP</th><th>Estudo</th><th>Vídeo</th><th>%</th></tr>
           </thead>
           <tbody id="alunosBody"></tbody>
         </table>
@@ -217,20 +223,27 @@ async function loadOverview() {
 
 function renderAlunos(filter = '') {
   const q = filter.trim().toLowerCase();
+  const onlyFav = $('onlyFav') && $('onlyFav').checked;
   const rows = alunos.filter(a => {
+    if (onlyFav && !a.favorito) return false;
     if (!q) return true;
-    return (a.nome || '').toLowerCase().includes(q) || (a.user_id || '').toLowerCase().includes(q);
+    return (a.nome || '').toLowerCase().includes(q)
+      || (a.user_id || '').toLowerCase().includes(q)
+      || (a.ultimo_ip || '').toLowerCase().includes(q);
   });
   $('alunosBody').innerHTML = rows.map(a => {
     const active = a.user_id === selectedId ? ' active' : '';
+    const star = a.favorito ? '★' : '☆';
     return `<tr class="row${active}" data-id="${a.user_id}">
-      <td><div style="font-weight:700">${a.nome || 'Estudante'}</div>
+      <td style="width:36px"><button class="star${a.favorito?' on':''}" type="button" data-fav="${a.user_id}" title="Favoritar">${star}</button></td>
+      <td><div style="font-weight:700">${escapeHtml(a.nome || 'Estudante')}${a.favorito?' <span class="pill fav-pill">fav</span>':''}</div>
       <div class="tiny">${shortId(a.user_id)} · ${fmtDate(a.ultimo_acesso)}</div></td>
+      <td><span class="ip">${escapeHtml(a.ultimo_ip || '—')}</span></td>
       <td>${fmtMin(a.segundos_estudo)}</td>
       <td>${fmtMin(a.segundos_video)}</td>
       <td>${a.precisao_pct ?? 0}%</td>
     </tr>`;
-  }).join('') || `<tr><td colspan="4" class="empty">Sem alunos ainda. Usa a plataforma para gerar atividade.</td></tr>`;
+  }).join('') || `<tr><td colspan="6" class="empty">Sem alunos ainda. Usa a plataforma para gerar atividade.</td></tr>`;
 }
 
 async function loadAlunos() {
@@ -251,8 +264,12 @@ async function selectAluno(id) {
       <div>
         <div class="h2" id="dNome" style="margin:0">—</div>
         <div class="tiny" id="dMeta"></div>
+        <div class="tiny" id="dIp" style="margin-top:6px"></div>
       </div>
-      <div class="pill" id="dStreak">Streak —</div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <button class="btn ghost" id="dFavBtn" type="button">☆ Favoritar</button>
+        <div class="pill" id="dStreak">Streak —</div>
+      </div>
     </div>
     <div class="grid g4" id="dStats" style="margin-top:14px"></div>
     <div class="tabs" id="tabs">
@@ -275,7 +292,16 @@ async function selectAluno(id) {
   const a = d.aluno || {};
   $('dNome').textContent = a.nome || 'Estudante';
   $('dMeta').textContent = `ID ${shortId(a.user_id)} · Registado ${fmtDate(a.registado_em)} · Último acesso ${fmtDate(a.ultimo_acesso)}`;
+  $('dIp').innerHTML = a.ultimo_ip
+    ? `IP: <span class="ip">${escapeHtml(a.ultimo_ip)}</span>`
+    : 'IP: <span class="muted">ainda sem IP (o aluno precisa abrir a app depois do deploy)</span>';
   $('dStreak').textContent = `Streak ${a.streak || 1} dia(s)`;
+  const favBtn = $('dFavBtn');
+  if (favBtn) {
+    favBtn.textContent = a.favorito ? '★ Favorito' : '☆ Favoritar';
+    favBtn.classList.toggle('on', !!a.favorito);
+    favBtn.onclick = () => toggleFavorito(a.user_id).catch(alert);
+  }
   $('dStats').innerHTML = [
     statCard('Vistas', a.perguntas_vistas || 0),
     statCard('Respondidas', a.perguntas_respondidas || 0),
@@ -298,6 +324,7 @@ async function selectAluno(id) {
         ${ev.questao_id ? ' · Q ' + ev.questao_id : ''}
         ${ev.video_id ? ' · vídeo ' + ev.video_id : ''}
         ${ev.material_id ? ' · mat ' + ev.material_id : ''}
+        ${ev.ip ? ' · IP ' + escapeHtml(ev.ip) : ''}
         ${ev.segundos ? ' · +' + ev.segundos + 's' : ''}
         ${ev.meta && Object.keys(ev.meta).length ? '<br>' + escapeHtml(JSON.stringify(ev.meta)) : ''}
       </div>
@@ -373,6 +400,20 @@ function wireTabs() {
   });
 }
 
+async function toggleFavorito(id) {
+  const data = await api('/api/admin/alunos/' + id + '/favorito', { method: 'POST', body: '{}' });
+  const a = alunos.find(x => x.user_id === id);
+  if (a) a.favorito = !!data.favorito;
+  if (detailCache && detailCache.aluno && detailCache.aluno.user_id === id) {
+    detailCache.aluno.favorito = !!data.favorito;
+  }
+  renderAlunos($('searchAluno').value);
+  if (selectedId === id) {
+    const favBtn = $('dFavBtn');
+    if (favBtn) favBtn.textContent = data.favorito ? '★ Favorito' : '☆ Favoritar';
+  }
+}
+
 $('loginForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   $('loginErr').classList.add('hidden');
@@ -398,7 +439,14 @@ $('btnLogout').onclick = () => {
 };
 $('btnRefresh').onclick = () => refreshAll().catch(alert);
 $('searchAluno').oninput = () => renderAlunos($('searchAluno').value);
+if ($('onlyFav')) $('onlyFav').onchange = () => renderAlunos($('searchAluno').value);
 $('alunosBody').onclick = (e) => {
+  const favBtn = e.target.closest('button[data-fav]');
+  if (favBtn) {
+    e.stopPropagation();
+    toggleFavorito(favBtn.dataset.fav).catch(alert);
+    return;
+  }
   const tr = e.target.closest('tr[data-id]');
   if (tr) selectAluno(tr.dataset.id).catch(alert);
 };
