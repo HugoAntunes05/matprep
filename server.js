@@ -29,13 +29,78 @@ function adminSb() {
 }
 
 function clientIp(req) {
-  const cf = req.headers['cf-connecting-ip'];
-  if (cf) return String(cf).split(',')[0].trim();
-  const xff = req.headers['x-forwarded-for'];
-  if (xff) return String(xff).split(',')[0].trim();
-  const real = req.headers['x-real-ip'];
-  if (real) return String(real).trim();
-  return (req.socket && req.socket.remoteAddress) || null;
+  const candidates = [
+    req.headers['cf-connecting-ip'],
+    req.headers['true-client-ip'],
+    req.headers['x-real-ip'],
+    req.headers['x-forwarded-for'],
+    req.socket && req.socket.remoteAddress,
+  ];
+  for (const raw of candidates) {
+    if (!raw) continue;
+    let ip = String(raw).split(',')[0].trim();
+    ip = ip.replace(/^::ffff:/i, '');
+    if (ip === '::1') ip = '127.0.0.1';
+    if (ip) return ip;
+  }
+  return null;
+}
+
+function eventIp(ev) {
+  if (!ev) return null;
+  if (ev.ip) return ev.ip;
+  if (ev.meta && ev.meta._ip) return ev.meta._ip;
+  return null;
+}
+
+async function saveUltimoIp(sb, userId, ip) {
+  if (!sb || !userId || !ip) return;
+  const now = new Date().toISOString();
+  try {
+    const { data } = await sb.from('aluno_metricas').select('user_id').eq('user_id', userId).maybeSingle();
+    if (data) {
+      const r = await sb.from('aluno_metricas').update({ ultimo_ip: ip, ultimo_acesso: now, updated_at: now }).eq('user_id', userId);
+      if (r.error) {
+        await sb.from('aluno_metricas').update({ ultimo_acesso: now, updated_at: now }).eq('user_id', userId);
+      }
+    } else {
+      const r = await sb.from('aluno_metricas').insert({ user_id: userId, ultimo_ip: ip, ultimo_acesso: now, updated_at: now });
+      if (r.error) {
+        await sb.from('aluno_metricas').insert({ user_id: userId, ultimo_acesso: now, updated_at: now });
+      }
+    }
+  } catch (e) {
+    console.warn('saveUltimoIp', e.message || e);
+  }
+}
+
+async function enrichAlunosComIp(sb, list) {
+  const out = (list || []).map((a) => Object.assign({}, a));
+  const need = out.filter((a) => !a.ultimo_ip).map((a) => a.user_id);
+  if (!need.length) return out;
+  let data = null;
+  let r = await sb
+    .from('atividade_eventos')
+    .select('user_id, ip, meta, created_at')
+    .in('user_id', need)
+    .order('created_at', { ascending: false })
+    .limit(800);
+  if (r.error) {
+    r = await sb
+      .from('atividade_eventos')
+      .select('user_id, meta, created_at')
+      .in('user_id', need)
+      .order('created_at', { ascending: false })
+      .limit(800);
+  }
+  data = r.data;
+  const map = {};
+  for (const ev of data || []) {
+    if (map[ev.user_id]) continue;
+    const ip = eventIp(ev);
+    if (ip) map[ev.user_id] = ip;
+  }
+  return out.map((a) => Object.assign(a, { ultimo_ip: a.ultimo_ip || map[a.user_id] || null }));
 }
 
 async function userFromBearer(req) {
@@ -101,6 +166,35 @@ app.get('/backoffice', (_req, res) => {
   res.sendFile(path.join(ROOT, 'admin.html'));
 });
 
+/** Regista presença + IP (sempre) */
+app.post('/api/aluno/presence', async (req, res) => {
+  try {
+    const user = await userFromBearer(req);
+    if (!user) return res.status(401).json({ error: 'Sem sessão.' });
+    const ip = clientIp(req);
+    const sb = adminSb();
+    if (sb) {
+      await saveUltimoIp(sb, user.id, ip);
+      const row = {
+        user_id: user.id,
+        tipo: 'presence',
+        segundos: 0,
+        meta: { _ip: ip, ua: (req.headers['user-agent'] || '').slice(0, 120) },
+      };
+      if (ip) row.ip = ip;
+      let { error } = await sb.from('atividade_eventos').insert(row);
+      if (error && row.ip) {
+        delete row.ip;
+        ({ error } = await sb.from('atividade_eventos').insert(row));
+      }
+      if (error) console.warn('presence insert', error.message);
+    }
+    res.json({ ok: true, ip });
+  } catch (e) {
+    res.status(500).json({ error: e.message || String(e) });
+  }
+});
+
 /** Regista evento com IP real (Cloudflare / proxy) */
 app.post('/api/aluno/track', async (req, res) => {
   try {
@@ -108,6 +202,8 @@ app.post('/api/aluno/track', async (req, res) => {
     if (!user) return res.status(401).json({ error: 'Sem sessão.' });
     const body = req.body || {};
     const ip = clientIp(req);
+    const meta = body.meta && typeof body.meta === 'object' ? Object.assign({}, body.meta) : {};
+    if (ip) meta._ip = ip;
     const row = {
       user_id: user.id,
       tipo: String(body.tipo || 'evento'),
@@ -117,34 +213,29 @@ app.post('/api/aluno/track', async (req, res) => {
       material_id: body.material_id || null,
       video_id: body.video_id || null,
       segundos: Number(body.segundos) || 0,
-      meta: body.meta && typeof body.meta === 'object' ? body.meta : {},
-      ip,
+      meta,
     };
+    if (ip) row.ip = ip;
     const sb = adminSb();
     if (sb) {
-      const { error } = await sb.from('atividade_eventos').insert(row);
+      let { error } = await sb.from('atividade_eventos').insert(row);
+      if (error && row.ip) {
+        delete row.ip;
+        ({ error } = await sb.from('atividade_eventos').insert(row));
+      }
       if (error) throw error;
-      await sb.from('aluno_metricas').upsert(
-        {
-          user_id: user.id,
-          ultimo_ip: ip,
-          ultimo_acesso: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-        { onConflict: 'user_id' }
-      );
+      await saveUltimoIp(sb, user.id, ip);
     } else {
-      // sem service role: tenta insert direto com o JWT do aluno (sem coluna ip se falhar)
       const userSb = createClient(supabaseUrl, supabaseKey, {
         global: { headers: { Authorization: req.headers.authorization } },
         auth: { persistSession: false, autoRefreshToken: false },
       });
-      const { error } = await userSb.from('atividade_eventos').insert(row);
-      if (error) {
+      let { error } = await userSb.from('atividade_eventos').insert(row);
+      if (error && row.ip) {
         delete row.ip;
-        const r2 = await userSb.from('atividade_eventos').insert(row);
-        if (r2.error) throw r2.error;
+        ({ error } = await userSb.from('atividade_eventos').insert(row));
       }
+      if (error) throw error;
     }
     res.json({ ok: true, ip });
   } catch (e) {
@@ -203,12 +294,24 @@ app.get('/api/admin/overview', requireAdmin, async (_req, res) => {
 app.get('/api/admin/alunos', requireAdmin, async (_req, res) => {
   const sb = adminSb();
   try {
-    const { data, error } = await sb
+    let data, error;
+    ({ data, error } = await sb
       .from('admin_alunos_resumo')
       .select('*')
-      .order('ultimo_acesso', { ascending: false, nullsFirst: false });
-    if (error) throw error;
-    const list = (data || []).slice().sort((a, b) => {
+      .order('ultimo_acesso', { ascending: false, nullsFirst: false }));
+    if (error) {
+      // fallback se a view nova ainda não existir
+      const r = await sb.from('perfis').select('id, nome, created_at');
+      if (r.error) throw error;
+      data = (r.data || []).map((p) => ({
+        user_id: p.id,
+        nome: p.nome,
+        registado_em: p.created_at,
+        favorito: false,
+      }));
+    }
+    let list = await enrichAlunosComIp(sb, data || []);
+    list = list.slice().sort((a, b) => {
       const fa = a.favorito ? 1 : 0;
       const fb = b.favorito ? 1 : 0;
       if (fa !== fb) return fb - fa;
@@ -217,6 +320,44 @@ app.get('/api/admin/alunos', requireAdmin, async (_req, res) => {
       return tb - ta;
     });
     res.json({ alunos: list });
+  } catch (e) {
+    res.status(500).json({ error: e.message || String(e) });
+  }
+});
+
+app.delete('/api/admin/alunos/:id', requireAdmin, async (req, res) => {
+  const sb = adminSb();
+  const id = req.params.id;
+  try {
+    const { error } = await sb.auth.admin.deleteUser(id);
+    if (error) throw error;
+    res.json({ ok: true, deleted: id });
+  } catch (e) {
+    res.status(500).json({ error: e.message || String(e) });
+  }
+});
+
+app.post('/api/admin/limpar-alunos', requireAdmin, async (req, res) => {
+  const sb = adminSb();
+  if (!req.body || req.body.confirm !== 'LIMPAR') {
+    return res.status(400).json({ error: 'Confirma com { "confirm": "LIMPAR" }.' });
+  }
+  try {
+    let deleted = 0;
+    let page = 1;
+    for (;;) {
+      const { data, error } = await sb.auth.admin.listUsers({ page, perPage: 100 });
+      if (error) throw error;
+      const users = (data && data.users) || [];
+      if (!users.length) break;
+      for (const u of users) {
+        const r = await sb.auth.admin.deleteUser(u.id);
+        if (!r.error) deleted += 1;
+      }
+      if (users.length < 100) break;
+      page += 1;
+    }
+    res.json({ ok: true, deleted });
   } catch (e) {
     res.status(500).json({ error: e.message || String(e) });
   }
@@ -258,12 +399,20 @@ app.get('/api/admin/alunos/:id', requireAdmin, async (req, res) => {
       sb.from('progresso').select('*').eq('user_id', id).maybeSingle(),
     ]);
     if (resumo.error) throw resumo.error;
+    const aluno = resumo.data ? Object.assign({}, resumo.data) : null;
+    if (aluno && !aluno.ultimo_ip) {
+      const enriched = await enrichAlunosComIp(sb, [aluno]);
+      aluno.ultimo_ip = enriched[0] && enriched[0].ultimo_ip;
+    }
+    const eventosLimpos = (eventos.data || []).map((ev) =>
+      Object.assign({}, ev, { ip: eventIp(ev) })
+    );
     res.json({
-      aluno: resumo.data,
+      aluno,
       videos: videos.data || [],
       licoes: licoes.data || [],
       perguntas: perguntas.data || [],
-      eventos: eventos.data || [],
+      eventos: eventosLimpos,
       progresso: progresso.data || null,
       errors: {
         videos: videos.error?.message,

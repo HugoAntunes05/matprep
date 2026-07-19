@@ -1018,6 +1018,12 @@ class Component extends DCLogic {
     try{
       if(!this._user)this._user=await this.garantirAuth();
       if(!this._user)return;
+      // Ruído: só atualiza métricas, não enche a timeline
+      const ruido=['view','video_tick','licao_tempo','video_pause'];
+      if(ruido.includes(tipo)){
+        await this.bumpMetricas(tipo, payload);
+        return;
+      }
       const row={
         user_id:this._user.id,
         tipo,
@@ -1051,6 +1057,23 @@ class Component extends DCLogic {
       }
       await this.bumpMetricas(tipo, payload);
     }catch(e){console.warn('track err',e);}
+  }
+  async reportPresence(){
+    const sb=this.sbClient(); if(!sb)return;
+    try{
+      if(!this._user)this._user=await this.garantirAuth();
+      const {data:{session}}=await sb.auth.getSession();
+      if(!session||!session.access_token)return;
+      const r=await fetch('/api/aluno/presence',{
+        method:'POST',
+        headers:{'Content-Type':'application/json',Authorization:'Bearer '+session.access_token},
+        body:'{}'
+      });
+      if(r.ok){
+        const j=await r.json().catch(()=>({}));
+        if(j.ip)this._clientIp=j.ip;
+      }
+    }catch(e){console.warn('presence',e);}
   }
   async bumpMetricas(tipo, payload){
     const sb=this.sbClient(); if(!sb||!this._user)return;
@@ -1510,10 +1533,15 @@ class Component extends DCLogic {
     this._onLeave=()=>{this.flushLicaoTempo();};
     window.addEventListener('beforeunload',this._onLeave);
     this.track('sessao_inicio',{meta:{ua:navigator.userAgent.slice(0,120),w:window.innerWidth}});
+    this.reportPresence();
     // Heartbeat de estudo enquanto a janela está aberta
     this._hb=setInterval(()=>{
       if(document.hidden)return;
       const s=this.state;
+      if(!this._presenceAt||Date.now()-this._presenceAt>120000){
+        this._presenceAt=Date.now();
+        this.reportPresence();
+      }
       if(s.view==='tema'&&s.tema){
         const tipo=(this.TIPOS[s.licao]||{}).id||('l'+s.licao);
         this.track('licao_tempo',{tema:s.tema,licao:tipo,segundos:15,meta:{heartbeat:true}});

@@ -8,136 +8,131 @@
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#0b1220; --panel:#121c2e; --line:#2a3a52; --text:#e8eef7; --muted:#8b9bb4;
+  --bg:#0b1220; --panel:#121c2e; --panel2:#182338; --line:#2a3a52; --text:#e8eef7; --muted:#8b9bb4;
   --teal:#2dd4bf; --teal2:#0d9488; --blue:#38bdf8; --rose:#fb7185; --amber:#fbbf24; --ok:#4ade80;
 }
 *{box-sizing:border-box}
-html,body{margin:0;min-height:100%;background:radial-gradient(circle at 10% -10%,rgba(45,212,191,.14),transparent 28%),radial-gradient(circle at 90% 0,rgba(56,189,248,.1),transparent 26%),var(--bg);color:var(--text);font-family:Sora,sans-serif}
+html,body{margin:0;min-height:100%;background:radial-gradient(circle at 8% -8%,rgba(45,212,191,.12),transparent 30%),var(--bg);color:var(--text);font-family:Sora,sans-serif}
 button,input{font-family:inherit}
 a{color:var(--blue);text-decoration:none}
-.wrap{max-width:1280px;margin:0 auto;padding:28px 20px 60px}
-.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:22px}
+.wrap{max-width:1180px;margin:0 auto;padding:24px 18px 56px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:18px}
 .brand{font-weight:800;font-size:22px;letter-spacing:-.02em}
 .brand span{color:var(--teal)}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px}
-.grid{display:grid;gap:12px}
-.g4{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
-.g2{grid-template-columns:minmax(280px,340px) 1fr}
-@media(max-width:900px){.g2{grid-template-columns:1fr}}
-.stat .k{font-size:12px;color:var(--muted);font-weight:600}
-.stat .v{font-size:24px;font-weight:800;margin-top:4px;color:var(--teal)}
-.btn{border:0;border-radius:11px;padding:11px 16px;font-weight:700;cursor:pointer;background:linear-gradient(135deg,var(--teal),var(--teal2));color:#042f2e}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+@media(max-width:800px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.stat .k{font-size:11.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.stat .v{font-size:22px;font-weight:800;margin-top:4px;color:var(--teal)}
+.layout{display:grid;grid-template-columns:340px 1fr;gap:14px}
+@media(max-width:920px){.layout{grid-template-columns:1fr}}
+.btn{border:0;border-radius:11px;padding:10px 14px;font-weight:700;cursor:pointer;background:linear-gradient(135deg,var(--teal),var(--teal2));color:#042f2e;font-size:13px}
 .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
+.btn.danger{background:transparent;border:1px solid rgba(251,113,133,.45);color:var(--rose)}
 .btn:disabled{opacity:.5;cursor:default}
-input[type=password],input[type=search],select{
-  width:100%;background:#182338;border:1px solid var(--line);border-radius:11px;padding:12px 14px;color:var(--text);outline:none
+input[type=password],input[type=search]{
+  width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:11px 13px;color:var(--text);outline:none
 }
-input:focus,select:focus{border-color:var(--teal)}
-.login{max-width:420px;margin:12vh auto;padding:28px}
-.login h1{margin:0 0 8px;font-size:24px}
-.login p{margin:0 0 18px;color:var(--muted);font-size:14px;line-height:1.5}
+input:focus{border-color:var(--teal)}
+.login{max-width:400px;margin:12vh auto;padding:26px}
+.login h1{margin:0 0 8px;font-size:22px}
+.login p{margin:0 0 16px;color:var(--muted);font-size:14px;line-height:1.5}
 .err{color:var(--rose);font-size:13px;margin-top:10px}
 .hidden{display:none!important}
-table{width:100%;border-collapse:collapse;font-size:13.5px}
-th,td{padding:11px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
-th{color:var(--muted);font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;font-weight:700}
-tr.row{cursor:pointer}
-tr.row:hover td{background:rgba(45,212,191,.06)}
-tr.active td{background:rgba(45,212,191,.12)}
-.pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:3px 10px;font-size:11.5px;font-weight:700;border:1px solid rgba(45,212,191,.3);color:var(--teal);background:rgba(45,212,191,.1)}
-.muted{color:var(--muted)}
+.h2{margin:0 0 10px;font-size:15px;font-weight:800}
 .tiny{font-size:12px;color:var(--muted)}
-.h2{margin:0 0 12px;font-size:16px;font-weight:800}
-.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0}
-.tab{border:1px solid var(--line);background:#182338;color:var(--muted);border-radius:999px;padding:7px 13px;font-size:12.5px;font-weight:700;cursor:pointer}
+.muted{color:var(--muted)}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.toolbar input{flex:1;min-width:140px}
+.alist{display:flex;flex-direction:column;gap:8px;max-height:68vh;overflow:auto;padding-right:2px}
+.aitem{border:1px solid var(--line);background:var(--panel2);border-radius:12px;padding:12px;cursor:pointer;transition:border-color .15s,background .15s}
+.aitem:hover{border-color:rgba(45,212,191,.4)}
+.aitem.on{border-color:var(--teal);background:rgba(45,212,191,.1)}
+.aitem .row1{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.aitem .nome{font-weight:700;font-size:14px}
+.aitem .meta{margin-top:6px;display:flex;flex-wrap:wrap;gap:8px 12px;font-size:12px;color:var(--muted)}
+.ip{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;color:var(--blue);font-weight:600}
+.star{border:0;background:transparent;cursor:pointer;font-size:18px;line-height:1;padding:0;color:#4b5568}
+.star.on{color:var(--amber)}
+.pill{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:3px 9px;font-size:11px;font-weight:700;border:1px solid rgba(45,212,191,.3);color:var(--teal);background:rgba(45,212,191,.1)}
+.pill.warn{border-color:rgba(251,191,36,.4);color:var(--amber);background:rgba(251,191,36,.1)}
+.pill.bad{border-color:rgba(251,113,133,.4);color:var(--rose);background:rgba(251,113,133,.1)}
+.pill.ok{border-color:rgba(74,222,128,.4);color:var(--ok);background:rgba(74,222,128,.1)}
+.empty{padding:36px 16px;text-align:center;color:var(--muted);font-size:14px;line-height:1.5}
+.dhead{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-start;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.dgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+@media(max-width:700px){.dgrid{grid-template-columns:repeat(2,1fr)}}
+.dstat{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.dstat .k{font-size:11px;color:var(--muted);font-weight:600}
+.dstat .v{font-size:16px;font-weight:800;margin-top:2px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.tab{border:1px solid var(--line);background:var(--panel2);color:var(--muted);border-radius:999px;padding:7px 12px;font-size:12px;font-weight:700;cursor:pointer}
 .tab.on{border-color:var(--teal);color:var(--teal);background:rgba(45,212,191,.12)}
-.timeline{display:flex;flex-direction:column;gap:8px;max-height:520px;overflow:auto}
-.ev{background:#182338;border:1px solid var(--line);border-radius:12px;padding:11px 13px}
-.ev .t{font-weight:700;font-size:13px}
-.ev .m{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.45}
-.bar{height:7px;background:#2a3a52;border-radius:99px;overflow:hidden;margin-top:6px}
+.timeline{display:flex;flex-direction:column;gap:0;max-height:540px;overflow:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel2)}
+.ev{display:grid;grid-template-columns:64px 1fr;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.ev:last-child{border-bottom:0}
+.ev .when{font-size:11px;color:var(--muted);line-height:1.35;padding-top:2px}
+.ev .t{font-weight:700;font-size:13.5px}
+.ev .m{font-size:12.5px;color:var(--muted);margin-top:3px;line-height:1.45}
+.ev.ok .t{color:var(--ok)}
+.ev.bad .t{color:var(--rose)}
+.ev.boss .t{color:var(--amber)}
+.bar{height:6px;background:#2a3a52;border-radius:99px;overflow:hidden;margin-top:6px}
 .bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--teal),var(--blue))}
-.empty{padding:28px;text-align:center;color:var(--muted)}
-.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
-.toolbar input{max-width:260px}
-.star{border:0;background:transparent;cursor:pointer;font-size:18px;line-height:1;padding:2px 4px;color:#4b5568}
-.star.on{color:var(--amber);filter:drop-shadow(0 0 6px rgba(251,191,36,.45))}
-.ip{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;color:var(--blue)}
-.fav-pill{border-color:rgba(251,191,36,.45);color:var(--amber);background:rgba(251,191,36,.12)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em}
+.filt{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.chip{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:999px;padding:5px 10px;font-size:11.5px;font-weight:700;cursor:pointer}
+.chip.on{border-color:var(--teal);color:var(--teal);background:rgba(45,212,191,.1)}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
 </style>
 </head>
 <body>
 <div id="loginView" class="login card">
   <div class="brand">Mat<span>Prep</span> Backoffice</div>
   <h1>Área de administração</h1>
-  <p>Vê o que cada aluno leu, minutos de vídeo, perguntas vistas/respondidas, materiais e exames.</p>
+  <p>Vê o aluno pelo IP, favorita, e acompanha o que fez sem ruído.</p>
   <form id="loginForm">
-    <label class="tiny" for="pwd">Password de admin</label>
-    <input id="pwd" type="password" autocomplete="current-password" placeholder="ADMIN_PASSWORD" required>
+    <label class="tiny" for="pwd">Password</label>
+    <input id="pwd" type="password" autocomplete="current-password" placeholder="passe123" required>
     <button class="btn" style="width:100%;margin-top:14px" type="submit">Entrar</button>
     <div id="loginErr" class="err hidden"></div>
   </form>
-  <p class="tiny" style="margin-top:16px">Define <code>ADMIN_PASSWORD</code> e <code>SUPABASE_SERVICE_ROLE_KEY</code> no servidor.</p>
 </div>
 
 <div id="appView" class="wrap hidden">
   <div class="top">
     <div>
       <div class="brand">Mat<span>Prep</span> Backoffice</div>
-      <div class="tiny">Monitorização completa da atividade dos alunos</div>
+      <div class="tiny">Alunos · IP · atividade importante</div>
     </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <a class="btn ghost" href="/" target="_blank">Abrir plataforma</a>
+    <div class="actions">
+      <a class="btn ghost" href="/" target="_blank">Plataforma</a>
       <button class="btn ghost" id="btnRefresh" type="button">Atualizar</button>
+      <button class="btn danger" id="btnClear" type="button">Limpar alunos</button>
       <button class="btn ghost" id="btnLogout" type="button">Sair</button>
     </div>
   </div>
 
-  <div id="overview" class="grid g4" style="margin-bottom:16px"></div>
+  <div id="overview" class="stats"></div>
 
-  <div class="grid g2">
+  <div class="layout">
     <div class="card">
       <div class="h2">Alunos</div>
       <div class="toolbar">
-        <input id="searchAluno" type="search" placeholder="Pesquisar nome / IP / id…">
-        <label class="tiny" style="display:inline-flex;align-items:center;gap:6px;white-space:nowrap;cursor:pointer">
-          <input id="onlyFav" type="checkbox"> Só favoritos
+        <input id="searchAluno" type="search" placeholder="Nome ou IP…">
+        <label class="tiny" style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;white-space:nowrap">
+          <input id="onlyFav" type="checkbox"> Favs
         </label>
       </div>
-      <div style="max-height:640px;overflow:auto">
-        <table>
-          <thead>
-            <tr><th></th><th>Aluno</th><th>IP</th><th>Estudo</th><th>Vídeo</th><th>%</th></tr>
-          </thead>
-          <tbody id="alunosBody"></tbody>
-        </table>
-      </div>
+      <div id="alunosBody" class="alist"></div>
     </div>
 
     <div class="card" id="detailCard">
-      <div class="empty" id="detailEmpty">Seleciona um aluno à esquerda para ver o detalhe completo.</div>
-      <div id="detail" class="hidden">
-        <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:flex-start">
-          <div>
-            <div class="h2" id="dNome" style="margin:0">—</div>
-            <div class="tiny" id="dMeta"></div>
-          </div>
-          <div class="pill" id="dStreak">Streak —</div>
-        </div>
-        <div class="grid g4" id="dStats" style="margin-top:14px"></div>
-        <div class="tabs" id="tabs">
-          <button class="tab on" data-tab="timeline" type="button">Linha temporal</button>
-          <button class="tab" data-tab="licoes" type="button">Lições lidas</button>
-          <button class="tab" data-tab="videos" type="button">Vídeos</button>
-          <button class="tab" data-tab="perguntas" type="button">Perguntas</button>
-          <button class="tab" data-tab="progresso" type="button">Progresso bruto</button>
-        </div>
-        <div id="pane-timeline"></div>
-        <div id="pane-licoes" class="hidden"></div>
-        <div id="pane-videos" class="hidden"></div>
-        <div id="pane-perguntas" class="hidden"></div>
-        <div id="pane-progresso" class="hidden"></div>
-      </div>
+      <div class="empty" id="detailEmpty">Seleciona um aluno à esquerda.</div>
+      <div id="detail" class="hidden"></div>
     </div>
   </div>
 </div>
@@ -148,15 +143,16 @@ let token = localStorage.getItem(TOKEN_KEY) || '';
 let alunos = [];
 let selectedId = null;
 let detailCache = null;
+let timelineMode = 'importantes';
 
+const NOISE = new Set(['view','video_tick','licao_tempo','video_pause','presence']);
 const $ = (id) => document.getElementById(id);
 
 function fmtMin(sec) {
   const s = Number(sec) || 0;
   const m = Math.floor(s / 60);
-  const r = s % 60;
   if (m >= 60) return `${Math.floor(m/60)}h ${m%60}m`;
-  return `${m}m ${r}s`;
+  return `${m} min`;
 }
 function fmtDate(v) {
   if (!v) return '—';
@@ -164,29 +160,55 @@ function fmtDate(v) {
     return new Date(v).toLocaleString('pt-PT', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
   } catch { return String(v); }
 }
-function shortId(id) {
-  return id ? String(id).slice(0, 8) + '…' : '—';
+function fmtTime(v) {
+  if (!v) return '';
+  try {
+    return new Date(v).toLocaleTimeString('pt-PT', { hour:'2-digit', minute:'2-digit' });
+  } catch { return ''; }
 }
-function tipoLabel(t) {
-  const map = {
-    sessao_inicio: 'Sessão iniciada',
-    view: 'Navegação',
-    licao_aberta: 'Abriu lição',
-    licao_tempo: 'Tempo na lição',
-    licao_concluida: 'Concluiu lição',
-    video_play: 'Play no vídeo',
-    video_tick: 'A ver vídeo',
-    video_pause: 'Pausa no vídeo',
-    video_youtube: 'Abriu no YouTube',
-    pergunta_vista: 'Viu pergunta',
-    pergunta_respondida: 'Respondeu pergunta',
-    material_aberto: 'Abriu material',
-    aprender_tema: 'Aprender · tema',
-    exame_inicio: 'Iniciou exame',
-    exame_fim: 'Terminou exame',
-    marca_rever: 'Marcou para rever',
-  };
-  return map[t] || t;
+function escapeHtml(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function evTitle(ev) {
+  const m = ev.meta || {};
+  switch (ev.tipo) {
+    case 'sessao_inicio': return 'Entrou na plataforma';
+    case 'presence': return 'Online';
+    case 'aprender_tema': return 'Abriu tema' + (ev.tema ? ': ' + ev.tema : '');
+    case 'licao_aberta': return 'Abriu lição' + (ev.licao ? ' · ' + ev.licao : '');
+    case 'licao_concluida': return 'Concluiu lição' + (ev.licao ? ' · ' + ev.licao : '');
+    case 'material_aberto': return 'Abriu material' + (m.titulo ? ': ' + m.titulo : '');
+    case 'video_play': return 'Viu vídeo' + (m.titulo ? ': ' + m.titulo : '');
+    case 'video_youtube': return 'Abriu no YouTube' + (m.titulo ? ': ' + m.titulo : '');
+    case 'pergunta_vista': return 'Viu pergunta' + (ev.questao_id ? ' · ' + ev.questao_id : '');
+    case 'pergunta_respondida':
+      return (m.ok ? 'Acertou pergunta' : 'Errou pergunta') + (ev.questao_id ? ' · ' + ev.questao_id : '');
+    case 'exame_inicio': return 'Iniciou exame';
+    case 'exame_fim': return 'Terminou exame' + (m.nota != null ? ' · nota ' + m.nota : '');
+    case 'boss_inicio': return 'Arena · combate' + (m.nome ? ': ' + m.nome : '');
+    case 'boss_vitoria': return 'Arena · vitória';
+    case 'boss_derrota': return 'Arena · derrota';
+    case 'item_usado': return 'Usou item' + (m.item ? ': ' + m.item : '');
+    default: return ev.tipo;
+  }
+}
+function evTone(ev) {
+  if (ev.tipo === 'pergunta_respondida') return ev.meta && ev.meta.ok ? 'ok' : 'bad';
+  if (ev.tipo === 'boss_vitoria' || ev.tipo === 'licao_concluida') return 'ok';
+  if (ev.tipo === 'boss_derrota') return 'bad';
+  if (String(ev.tipo).startsWith('boss') || ev.tipo === 'item_usado') return 'boss';
+  return '';
+}
+function evDetail(ev) {
+  const bits = [];
+  if (ev.tema) bits.push('tema ' + ev.tema);
+  if (ev.licao) bits.push('lição ' + ev.licao);
+  if (ev.meta && ev.meta.dif) bits.push(ev.meta.dif);
+  if (ev.meta && ev.meta.modo) bits.push(ev.meta.modo);
+  if (ev.segundos) bits.push('+' + ev.segundos + 's');
+  if (ev.ip) bits.push('IP ' + ev.ip);
+  return bits.join(' · ');
 }
 
 async function api(path, opts = {}) {
@@ -203,199 +225,164 @@ function showApp(on) {
   $('appView').classList.toggle('hidden', !on);
 }
 
-function statCard(k, v) {
-  return `<div class="card stat"><div class="k">${k}</div><div class="v">${v}</div></div>`;
-}
-
 async function loadOverview() {
   const o = await api('/api/admin/overview');
   $('overview').innerHTML = [
-    statCard('Alunos', o.totalAlunos),
-    statCard('Ativos (24h)', o.ativosHoje),
-    statCard('Perguntas vistas', o.perguntasVistas),
-    statCard('Respondidas', o.perguntasRespondidas),
-    statCard('Min. vídeo', o.minutosVideo),
-    statCard('Min. estudo', o.minutosEstudo),
-    statCard('Lições concluídas', o.licoesConcluidas),
-    statCard('Eventos', o.totalEventos),
-  ].join('');
+    ['Alunos', o.totalAlunos],
+    ['Ativos 24h', o.ativosHoje],
+    ['Estudo', (o.minutosEstudo || 0) + ' min'],
+    ['Vídeo', (o.minutosVideo || 0) + ' min'],
+  ].map(([k,v]) => `<div class="stat"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('');
 }
 
-function renderAlunos(filter = '') {
-  const q = filter.trim().toLowerCase();
-  const onlyFav = $('onlyFav') && $('onlyFav').checked;
+function renderAlunos() {
+  const q = ($('searchAluno').value || '').trim().toLowerCase();
+  const onlyFav = $('onlyFav').checked;
   const rows = alunos.filter(a => {
     if (onlyFav && !a.favorito) return false;
     if (!q) return true;
     return (a.nome || '').toLowerCase().includes(q)
-      || (a.user_id || '').toLowerCase().includes(q)
-      || (a.ultimo_ip || '').toLowerCase().includes(q);
+      || (a.ultimo_ip || '').toLowerCase().includes(q)
+      || (a.user_id || '').toLowerCase().includes(q);
   });
-  $('alunosBody').innerHTML = rows.map(a => {
-    const active = a.user_id === selectedId ? ' active' : '';
-    const star = a.favorito ? '★' : '☆';
-    return `<tr class="row${active}" data-id="${a.user_id}">
-      <td style="width:36px"><button class="star${a.favorito?' on':''}" type="button" data-fav="${a.user_id}" title="Favoritar">${star}</button></td>
-      <td><div style="font-weight:700">${escapeHtml(a.nome || 'Estudante')}${a.favorito?' <span class="pill fav-pill">fav</span>':''}</div>
-      <div class="tiny">${shortId(a.user_id)} · ${fmtDate(a.ultimo_acesso)}</div></td>
-      <td><span class="ip">${escapeHtml(a.ultimo_ip || '—')}</span></td>
-      <td>${fmtMin(a.segundos_estudo)}</td>
-      <td>${fmtMin(a.segundos_video)}</td>
-      <td>${a.precisao_pct ?? 0}%</td>
-    </tr>`;
-  }).join('') || `<tr><td colspan="6" class="empty">Sem alunos ainda. Usa a plataforma para gerar atividade.</td></tr>`;
+  $('alunosBody').innerHTML = rows.map(a => `
+    <div class="aitem${a.user_id===selectedId?' on':''}" data-id="${a.user_id}">
+      <div class="row1">
+        <div class="nome">${escapeHtml(a.nome || 'Estudante')}${a.favorito?' <span class="pill warn">fav</span>':''}</div>
+        <button class="star${a.favorito?' on':''}" type="button" data-fav="${a.user_id}" title="Favoritar">${a.favorito?'★':'☆'}</button>
+      </div>
+      <div class="meta">
+        <span class="ip">${escapeHtml(a.ultimo_ip || 'sem IP')}</span>
+        <span>${fmtDate(a.ultimo_acesso)}</span>
+        <span>${a.precisao_pct ?? 0}% · ${fmtMin(a.segundos_estudo)}</span>
+      </div>
+    </div>
+  `).join('') || '<div class="empty">Sem alunos. Abre a plataforma e volta a atualizar.</div>';
 }
 
 async function loadAlunos() {
   const data = await api('/api/admin/alunos');
   alunos = data.alunos || [];
-  renderAlunos($('searchAluno').value);
+  renderAlunos();
+}
+
+function renderTimeline(eventos) {
+  let list = eventos || [];
+  if (timelineMode === 'importantes') list = list.filter(ev => !NOISE.has(ev.tipo));
+  if (!list.length) {
+    return '<div class="empty">Sem atividade importante ainda.</div>';
+  }
+  let lastDay = '';
+  return `<div class="timeline">${list.map(ev => {
+    const day = fmtDate(ev.created_at).split(',')[0] || fmtDate(ev.created_at);
+    let dayHeader = '';
+    if (day !== lastDay) {
+      lastDay = day;
+      dayHeader = `<div class="ev" style="grid-template-columns:1fr;background:rgba(0,0,0,.15)"><div class="tiny" style="font-weight:700;color:var(--teal)">${escapeHtml(day)}</div></div>`;
+    }
+    const tone = evTone(ev);
+    const detail = evDetail(ev);
+    return `${dayHeader}<div class="ev ${tone}">
+      <div class="when">${fmtTime(ev.created_at)}</div>
+      <div>
+        <div class="t">${escapeHtml(evTitle(ev))}</div>
+        ${detail ? `<div class="m">${escapeHtml(detail)}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('')}</div>`;
 }
 
 async function selectAluno(id) {
   selectedId = id;
-  renderAlunos($('searchAluno').value);
+  renderAlunos();
   $('detailEmpty').classList.add('hidden');
   $('detail').classList.remove('hidden');
   $('detail').innerHTML = '<div class="empty">A carregar…</div>';
-  // rebuild detail structure after loading — easier to reset HTML
-  const htmlShell = `
-    <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:flex-start">
-      <div>
-        <div class="h2" id="dNome" style="margin:0">—</div>
-        <div class="tiny" id="dMeta"></div>
-        <div class="tiny" id="dIp" style="margin-top:6px"></div>
-      </div>
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-        <button class="btn ghost" id="dFavBtn" type="button">☆ Favoritar</button>
-        <div class="pill" id="dStreak">Streak —</div>
-      </div>
-    </div>
-    <div class="grid g4" id="dStats" style="margin-top:14px"></div>
-    <div class="tabs" id="tabs">
-      <button class="tab on" data-tab="timeline" type="button">Linha temporal</button>
-      <button class="tab" data-tab="licoes" type="button">Lições lidas</button>
-      <button class="tab" data-tab="videos" type="button">Vídeos</button>
-      <button class="tab" data-tab="perguntas" type="button">Perguntas</button>
-      <button class="tab" data-tab="progresso" type="button">Progresso bruto</button>
-    </div>
-    <div id="pane-timeline"></div>
-    <div id="pane-licoes" class="hidden"></div>
-    <div id="pane-videos" class="hidden"></div>
-    <div id="pane-perguntas" class="hidden"></div>
-    <div id="pane-progresso" class="hidden"></div>`;
-  $('detail').innerHTML = htmlShell;
-  wireTabs();
 
   const d = await api('/api/admin/alunos/' + id);
   detailCache = d;
   const a = d.aluno || {};
-  $('dNome').textContent = a.nome || 'Estudante';
-  $('dMeta').textContent = `ID ${shortId(a.user_id)} · Registado ${fmtDate(a.registado_em)} · Último acesso ${fmtDate(a.ultimo_acesso)}`;
-  $('dIp').innerHTML = a.ultimo_ip
-    ? `IP: <span class="ip">${escapeHtml(a.ultimo_ip)}</span>`
-    : 'IP: <span class="muted">ainda sem IP (o aluno precisa abrir a app depois do deploy)</span>';
-  $('dStreak').textContent = `Streak ${a.streak || 1} dia(s)`;
-  const favBtn = $('dFavBtn');
-  if (favBtn) {
-    favBtn.textContent = a.favorito ? '★ Favorito' : '☆ Favoritar';
-    favBtn.classList.toggle('on', !!a.favorito);
-    favBtn.onclick = () => toggleFavorito(a.user_id).catch(alert);
-  }
-  $('dStats').innerHTML = [
-    statCard('Vistas', a.perguntas_vistas || 0),
-    statCard('Respondidas', a.perguntas_respondidas || 0),
-    statCard('Certas', a.perguntas_certas || 0),
-    statCard('Precisão', (a.precisao_pct || 0) + '%'),
-    statCard('Vídeo', fmtMin(a.segundos_video)),
-    statCard('Estudo', fmtMin(a.segundos_estudo)),
-    statCard('Lições OK', a.licoes_concluidas || 0),
-    statCard('Materiais', a.materiais_abertos || 0),
-    statCard('Exames', a.exames_feitos || 0),
-  ].join('');
 
-  // timeline
-  $('pane-timeline').innerHTML = `<div class="timeline">${(d.eventos || []).map(ev => `
-    <div class="ev">
-      <div class="t">${tipoLabel(ev.tipo)}</div>
-      <div class="m">${fmtDate(ev.created_at)}
-        ${ev.tema ? ' · tema ' + ev.tema : ''}
-        ${ev.licao ? ' · lição ' + ev.licao : ''}
-        ${ev.questao_id ? ' · Q ' + ev.questao_id : ''}
-        ${ev.video_id ? ' · vídeo ' + ev.video_id : ''}
-        ${ev.material_id ? ' · mat ' + ev.material_id : ''}
-        ${ev.ip ? ' · IP ' + escapeHtml(ev.ip) : ''}
-        ${ev.segundos ? ' · +' + ev.segundos + 's' : ''}
-        ${ev.meta && Object.keys(ev.meta).length ? '<br>' + escapeHtml(JSON.stringify(ev.meta)) : ''}
+  $('detail').innerHTML = `
+    <div class="dhead">
+      <div>
+        <div class="h2" style="margin:0;font-size:20px">${escapeHtml(a.nome || 'Estudante')}</div>
+        <div class="tiny" style="margin-top:6px">Último acesso ${fmtDate(a.ultimo_acesso)}</div>
+        <div style="margin-top:8px;font-size:14px">IP: <span class="ip">${escapeHtml(a.ultimo_ip || 'ainda sem IP — o aluno tem de abrir o site')}</span></div>
       </div>
-    </div>`).join('') || '<div class="empty">Sem eventos ainda.</div>'}</div>`;
+      <div class="actions">
+        <button class="btn ghost" id="dFavBtn" type="button">${a.favorito ? '★ Favorito' : '☆ Favoritar'}</button>
+        <button class="btn danger" id="dDelBtn" type="button">Apagar</button>
+      </div>
+    </div>
+    <div class="dgrid">
+      <div class="dstat"><div class="k">Precisão</div><div class="v">${a.precisao_pct ?? 0}%</div></div>
+      <div class="dstat"><div class="k">Respondidas</div><div class="v">${a.perguntas_respondidas || 0}</div></div>
+      <div class="dstat"><div class="k">Certas</div><div class="v">${a.perguntas_certas || 0}</div></div>
+      <div class="dstat"><div class="k">Estudo</div><div class="v">${fmtMin(a.segundos_estudo)}</div></div>
+      <div class="dstat"><div class="k">Vídeo</div><div class="v">${fmtMin(a.segundos_video)}</div></div>
+      <div class="dstat"><div class="k">Lições OK</div><div class="v">${a.licoes_concluidas || 0}</div></div>
+    </div>
+    <div class="tabs" id="tabs">
+      <button class="tab on" data-tab="timeline" type="button">Atividade</button>
+      <button class="tab" data-tab="licoes" type="button">Lições</button>
+      <button class="tab" data-tab="videos" type="button">Vídeos</button>
+      <button class="tab" data-tab="perguntas" type="button">Perguntas</button>
+    </div>
+    <div id="pane-timeline">
+      <div class="filt">
+        <button class="chip ${timelineMode==='importantes'?'on':''}" data-mode="importantes" type="button">Importantes</button>
+        <button class="chip ${timelineMode==='tudo'?'on':''}" data-mode="tudo" type="button">Tudo</button>
+      </div>
+      <div id="timelineBox">${renderTimeline(d.eventos)}</div>
+    </div>
+    <div id="pane-licoes" class="hidden">
+      <table><thead><tr><th>Tema</th><th>Lição</th><th>Tempo</th><th>Estado</th></tr></thead><tbody>
+        ${(d.licoes||[]).map(l=>`<tr>
+          <td>${escapeHtml(l.tema)}</td><td>${escapeHtml(l.licao)}</td><td>${fmtMin(l.segundos_lidos)}</td>
+          <td>${l.concluida?'<span class="pill ok">Concluída</span>':'<span class="pill warn">Em curso</span>'} · ${l.aberturas||0}x</td>
+        </tr>`).join('') || '<tr><td colspan="4" class="empty">Nada ainda.</td></tr>'}
+      </tbody></table>
+    </div>
+    <div id="pane-videos" class="hidden">
+      <table><thead><tr><th>Vídeo</th><th>Visto</th><th>%</th></tr></thead><tbody>
+        ${(d.videos||[]).map(v=>{
+          const pct=Math.min(100,v.percentual||0);
+          return `<tr><td><b>${escapeHtml(v.titulo||v.video_id)}</b><div class="bar"><i style="width:${pct}%"></i></div></td>
+          <td>${fmtMin(v.segundos_vistos)}</td><td>${pct}%</td></tr>`;
+        }).join('') || '<tr><td colspan="3" class="empty">Nenhum vídeo.</td></tr>'}
+      </tbody></table>
+    </div>
+    <div id="pane-perguntas" class="hidden">
+      <table><thead><tr><th>Pergunta</th><th>Tema</th><th>Certas</th><th>Erradas</th></tr></thead><tbody>
+        ${(d.perguntas||[]).map(p=>`<tr>
+          <td>${escapeHtml(p.questao_id)}</td><td>${escapeHtml(p.tema||'—')}</td>
+          <td class="pill ok" style="border:0;background:transparent">${p.certas||0}</td>
+          <td style="color:var(--rose);font-weight:700">${p.erradas||0}</td>
+        </tr>`).join('') || '<tr><td colspan="4" class="empty">Nenhuma pergunta.</td></tr>'}
+      </tbody></table>
+    </div>`;
 
-  // licoes
-  $('pane-licoes').innerHTML = `<table><thead><tr><th>Tema</th><th>Lição</th><th>Tempo</th><th>Estado</th><th>Última</th></tr></thead><tbody>
-    ${(d.licoes || []).map(l => `<tr>
-      <td>${l.tema}</td><td>${l.licao}</td><td>${fmtMin(l.segundos_lidos)}</td>
-      <td>${l.concluida ? '<span class="badge-ok">Concluída</span>' : '<span class="badge-warn">Em curso</span>'} · ${l.aberturas}x</td>
-      <td>${fmtDate(l.ultima_abertura)}</td>
-    </tr>`).join('') || '<tr><td colspan="5" class="empty">Nenhuma lição registada.</td></tr>'}
-  </tbody></table>`;
-
-  // videos
-  $('pane-videos').innerHTML = `<table><thead><tr><th>Vídeo</th><th>Contexto</th><th>Visto</th><th>%</th><th>Plays</th></tr></thead><tbody>
-    ${(d.videos || []).map(v => {
-      const pct = Math.min(100, v.percentual || 0);
-      return `<tr>
-        <td><div style="font-weight:700">${escapeHtml(v.titulo || v.video_id)}</div>
-        <div class="tiny">${escapeHtml(v.canal || '')} · ${v.video_id}</div>
-        <div class="bar"><i style="width:${pct}%"></i></div></td>
-        <td>${v.contexto}${v.tema ? ' / ' + v.tema : ''}${v.material_id ? ' / ' + v.material_id : ''}</td>
-        <td>${fmtMin(v.segundos_vistos)}</td>
-        <td>${pct}%</td>
-        <td>${v.plays || 0}</td>
-      </tr>`;
-    }).join('') || '<tr><td colspan="5" class="empty">Nenhum vídeo visto.</td></tr>'}
-  </tbody></table>`;
-
-  // perguntas
-  $('pane-perguntas').innerHTML = `<table><thead><tr><th>ID</th><th>Tema</th><th>Modo</th><th>Vistas</th><th>Resp.</th><th>Certas/Erradas</th><th>Tempo</th></tr></thead><tbody>
-    ${(d.perguntas || []).map(p => `<tr>
-      <td>${p.questao_id}</td><td>${p.tema || '—'}</td><td>${p.modo || '—'}</td>
-      <td>${p.vistas}</td><td>${p.respondidas}</td>
-      <td><span class="badge-ok">${p.certas}</span> / <span class="badge-bad">${p.erradas}</span></td>
-      <td>${fmtMin(p.segundos_total)}</td>
-    </tr>`).join('') || '<tr><td colspan="7" class="empty">Nenhuma pergunta vista.</td></tr>'}
-  </tbody></table>`;
-
-  // progresso bruto
-  const pr = d.progresso || {};
-  const licoesJson = pr.licoes || a.licoes_json || {};
-  $('pane-progresso').innerHTML = `
-    <div class="tiny" style="margin-bottom:8px">Snapshot sincronizado da app (localStorage → tabela progresso)</div>
-    <pre style="background:#182338;border:1px solid var(--line);border-radius:12px;padding:14px;overflow:auto;max-height:420px;font-size:12px;line-height:1.45">${escapeHtml(JSON.stringify({
-      streak: pr.streak,
-      last_dia: pr.last_dia,
-      licoes: licoesJson,
-      ultima: pr.ultima,
-      resp: pr.resp,
-      erradas: pr.erradas,
-      rever: pr.rever,
-      hist: pr.hist,
-      exames: pr.exames,
-      temas_visitados: a.temas_visitados,
-    }, null, 2))}</pre>`;
+  $('dFavBtn').onclick = () => toggleFavorito(a.user_id).catch(alert);
+  $('dDelBtn').onclick = () => apagarAluno(a.user_id).catch(alert);
+  wireDetailUi();
 }
 
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-
-function wireTabs() {
+function wireDetailUi() {
   document.querySelectorAll('#tabs .tab').forEach(btn => {
     btn.onclick = () => {
       document.querySelectorAll('#tabs .tab').forEach(b => b.classList.toggle('on', b === btn));
-      ['timeline','licoes','videos','perguntas','progresso'].forEach(name => {
+      ['timeline','licoes','videos','perguntas'].forEach(name => {
         const pane = $('pane-' + name);
         if (pane) pane.classList.toggle('hidden', name !== btn.dataset.tab);
       });
+    };
+  });
+  document.querySelectorAll('[data-mode]').forEach(btn => {
+    btn.onclick = () => {
+      timelineMode = btn.dataset.mode;
+      document.querySelectorAll('[data-mode]').forEach(b => b.classList.toggle('on', b === btn));
+      if (detailCache) $('timelineBox').innerHTML = renderTimeline(detailCache.eventos);
     };
   });
 }
@@ -407,11 +394,29 @@ async function toggleFavorito(id) {
   if (detailCache && detailCache.aluno && detailCache.aluno.user_id === id) {
     detailCache.aluno.favorito = !!data.favorito;
   }
-  renderAlunos($('searchAluno').value);
-  if (selectedId === id) {
-    const favBtn = $('dFavBtn');
-    if (favBtn) favBtn.textContent = data.favorito ? '★ Favorito' : '☆ Favoritar';
-  }
+  renderAlunos();
+  if (selectedId === id) await selectAluno(id);
+}
+
+async function apagarAluno(id) {
+  if (!confirm('Apagar este aluno e toda a atividade?')) return;
+  await api('/api/admin/alunos/' + id, { method: 'DELETE' });
+  selectedId = null;
+  $('detail').classList.add('hidden');
+  $('detailEmpty').classList.remove('hidden');
+  await refreshAll();
+}
+
+async function limparTodos() {
+  if (!confirm('Isto apaga TODOS os alunos. Continuar?')) return;
+  const ok = prompt('Escreve LIMPAR para confirmar');
+  if (ok !== 'LIMPAR') return;
+  const r = await api('/api/admin/limpar-alunos', { method: 'POST', body: JSON.stringify({ confirm: 'LIMPAR' }) });
+  alert('Apagados: ' + (r.deleted || 0));
+  selectedId = null;
+  $('detail').classList.add('hidden');
+  $('detailEmpty').classList.remove('hidden');
+  await refreshAll();
 }
 
 $('loginForm').addEventListener('submit', async (e) => {
@@ -438,8 +443,9 @@ $('btnLogout').onclick = () => {
   showApp(false);
 };
 $('btnRefresh').onclick = () => refreshAll().catch(alert);
-$('searchAluno').oninput = () => renderAlunos($('searchAluno').value);
-if ($('onlyFav')) $('onlyFav').onchange = () => renderAlunos($('searchAluno').value);
+$('btnClear').onclick = () => limparTodos().catch(alert);
+$('searchAluno').oninput = () => renderAlunos();
+$('onlyFav').onchange = () => renderAlunos();
 $('alunosBody').onclick = (e) => {
   const favBtn = e.target.closest('button[data-fav]');
   if (favBtn) {
@@ -447,8 +453,8 @@ $('alunosBody').onclick = (e) => {
     toggleFavorito(favBtn.dataset.fav).catch(alert);
     return;
   }
-  const tr = e.target.closest('tr[data-id]');
-  if (tr) selectAluno(tr.dataset.id).catch(alert);
+  const item = e.target.closest('[data-id]');
+  if (item) selectAluno(item.dataset.id).catch(alert);
 };
 
 async function refreshAll() {
