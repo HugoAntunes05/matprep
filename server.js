@@ -17,7 +17,7 @@ const serviceKey =
   process.env.SUPABASE_SERVICE_ROLE_KEY ||
   process.env.SUPABASE_SECRET_KEY ||
   '';
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'passe123';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'tibas132';
 
 const adminTokens = new Map();
 
@@ -106,6 +106,11 @@ async function enrichAlunosComIp(sb, list) {
 function temAtividade(a) {
   if (!a) return false;
   if (a.ultimo_acesso) return true;
+  if (a._tem_eventos) return true;
+  if (a.registado_em) {
+    const age = Date.now() - new Date(a.registado_em).getTime();
+    if (age >= 0 && age < 48 * 3600 * 1000) return true; // conta nova < 48h
+  }
   const keys = [
     'perguntas_vistas',
     'perguntas_respondidas',
@@ -135,7 +140,7 @@ function agruparAlunosPorIp(list) {
   ];
 
   for (const raw of list || []) {
-    if (!temAtividade(raw) && !raw.ultimo_ip) continue; // fantasma vazio
+    if (!temAtividade(raw) && !raw.ultimo_ip) continue;
     const a = Object.assign({}, raw);
     const key = a.ultimo_ip ? 'ip:' + a.ultimo_ip : 'uid:' + a.user_id;
     if (!groups.has(key)) {
@@ -174,6 +179,16 @@ function agruparAlunosPorIp(list) {
   });
 }
 
+async function marcarUsersComEventos(sb, list) {
+  try {
+    const { data } = await sb.from('atividade_eventos').select('user_id').limit(3000);
+    const set = new Set((data || []).map((e) => e.user_id));
+    return (list || []).map((a) => Object.assign({}, a, { _tem_eventos: set.has(a.user_id) }));
+  } catch (_) {
+    return list || [];
+  }
+}
+
 async function carregarAlunosAgrupados(sb) {
   let data, error;
   ({ data, error } = await sb.from('admin_alunos_resumo').select('*'));
@@ -188,6 +203,7 @@ async function carregarAlunosAgrupados(sb) {
     }));
   }
   let list = await enrichAlunosComIp(sb, data || []);
+  list = await marcarUsersComEventos(sb, list);
   list = agruparAlunosPorIp(list);
   list.sort((a, b) => {
     const fa = a.favorito ? 1 : 0;

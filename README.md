@@ -63,7 +63,7 @@ A app lê `temas`, `questoes`, `abertas`, `materiais` no Supabase; se a BD estiv
 
 URL: `/admin` (ou `/backoffice`)
 
-Password: variável `ADMIN_PASSWORD` (default local: `passe123`)
+Password: variável `ADMIN_PASSWORD` (default local: `tibas132`)
 
 Requisitos no servidor:
 - `SUPABASE_SERVICE_ROLE_KEY`

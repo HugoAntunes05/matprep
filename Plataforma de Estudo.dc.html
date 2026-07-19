@@ -1024,8 +1024,7 @@ class Component extends DCLogic {
         await this.bumpMetricas(tipo, payload);
         return;
       }
-      const row={
-        user_id:this._user.id,
+      const body={
         tipo,
         tema:payload.tema||null,
         licao:payload.licao||null,
@@ -1036,22 +1035,24 @@ class Component extends DCLogic {
         meta:payload.meta||{}
       };
       let viaServer=false;
-      try{
-        const {data:{session}}=await sb.auth.getSession();
-        if(session&&session.access_token){
-          const r=await fetch('/api/aluno/track',{
-            method:'POST',
-            headers:{'Content-Type':'application/json',Authorization:'Bearer '+session.access_token},
-            body:JSON.stringify({tipo,tema:row.tema,licao:row.licao,questao_id:row.questao_id,material_id:row.material_id,video_id:row.video_id,segundos:row.segundos,meta:row.meta})
-          });
+      for(let tentativa=0;tentativa<2&&!viaServer;tentativa++){
+        try{
+          const headers=await this.sessionHeaders();
+          if(!headers)break;
+          const r=await fetch('/api/aluno/track',{method:'POST',headers,body:JSON.stringify(body)});
+          if(r.status===401&&tentativa===0){
+            await this.garantirAuth(true);
+            continue;
+          }
           if(r.ok){
             viaServer=true;
             const j=await r.json().catch(()=>({}));
             if(j.ip)this._clientIp=j.ip;
           }
-        }
-      }catch(_){}
+        }catch(_){}
+      }
       if(!viaServer){
+        const row=Object.assign({user_id:this._user.id},body);
         const {error}=await sb.from('atividade_eventos').insert(row);
         if(error)console.warn('track',tipo,error.message);
       }
@@ -1059,19 +1060,21 @@ class Component extends DCLogic {
     }catch(e){console.warn('track err',e);}
   }
   async reportPresence(){
-    const sb=this.sbClient(); if(!sb)return;
     try{
       if(!this._user)this._user=await this.garantirAuth();
-      const {data:{session}}=await sb.auth.getSession();
-      if(!session||!session.access_token)return;
-      const r=await fetch('/api/aluno/presence',{
-        method:'POST',
-        headers:{'Content-Type':'application/json',Authorization:'Bearer '+session.access_token},
-        body:'{}'
-      });
-      if(r.ok){
-        const j=await r.json().catch(()=>({}));
-        if(j.ip)this._clientIp=j.ip;
+      for(let tentativa=0;tentativa<2;tentativa++){
+        const headers=await this.sessionHeaders();
+        if(!headers)return;
+        const r=await fetch('/api/aluno/presence',{method:'POST',headers,body:'{}'});
+        if(r.status===401&&tentativa===0){
+          await this.garantirAuth(true);
+          continue;
+        }
+        if(r.ok){
+          const j=await r.json().catch(()=>({}));
+          if(j.ip)this._clientIp=j.ip;
+        }
+        return;
       }
     }catch(e){console.warn('presence',e);}
   }
@@ -1213,15 +1216,35 @@ class Component extends DCLogic {
     this._sb=window.supabase.createClient(url,key,{auth:{persistSession:true,autoRefreshToken:true,storage:window.localStorage}});
     return this._sb;
   }
-  async garantirAuth(){
+  async garantirAuth(forceNew){
     const sb=this.sbClient(); if(!sb)return null;
     try{
-      const {data:{session}}=await sb.auth.getSession();
-      if(session?.user)return session.user;
+      if(forceNew){
+        try{await sb.auth.signOut();}catch(_){}
+        this._user=null;
+      } else {
+        const {data:{session}}=await sb.auth.getSession();
+        if(session&&session.user){
+          const {data:{user},error}=await sb.auth.getUser();
+          if(user&&!error){this._user=user;return user;}
+          try{await sb.auth.signOut();}catch(_){}
+        }
+      }
       const {data,error}=await sb.auth.signInAnonymously();
       if(error){console.warn('Auth anónima:',error.message);return null;}
-      return data?.user||null;
+      this._user=data&&data.user||null;
+      return this._user;
     }catch(e){console.warn('Auth:',e);return null;}
+  }
+  async sessionHeaders(){
+    const sb=this.sbClient(); if(!sb)return null;
+    let {data:{session}}=await sb.auth.getSession();
+    if(!session||!session.access_token){
+      await this.garantirAuth(true);
+      ({data:{session}}=await sb.auth.getSession());
+    }
+    if(!session||!session.access_token)return null;
+    return {'Content-Type':'application/json',Authorization:'Bearer '+session.access_token};
   }
   mapDadosFromDb(temas,questoes,abertas,materiais){
     const TEMAS=(temas||[]).slice().sort((a,b)=>(a.ordem||0)-(b.ordem||0)).map(t=>({
@@ -1533,7 +1556,8 @@ class Component extends DCLogic {
     this._onLeave=()=>{this.flushLicaoTempo();};
     window.addEventListener('beforeunload',this._onLeave);
     this.track('sessao_inicio',{meta:{ua:navigator.userAgent.slice(0,120),w:window.innerWidth}});
-    this.reportPresence();
+    setTimeout(()=>this.reportPresence(),400);
+    setTimeout(()=>this.reportPresence(),2500);
     // Heartbeat de estudo enquanto a janela está aberta
     this._hb=setInterval(()=>{
       if(document.hidden)return;
