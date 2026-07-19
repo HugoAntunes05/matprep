@@ -255,6 +255,7 @@ function renderAlunos() {
         <span class="ip">${escapeHtml(a.ultimo_ip || 'sem IP')}</span>
         <span>${fmtDate(a.ultimo_acesso)}</span>
         <span>${a.precisao_pct ?? 0}% · ${fmtMin(a.segundos_estudo)}</span>
+        ${a.sessoes > 1 ? `<span>${a.sessoes} sessões</span>` : ''}
       </div>
     </div>
   `).join('') || '<div class="empty">Sem alunos. Abre a plataforma e volta a atualizar.</div>';
@@ -308,7 +309,7 @@ async function selectAluno(id) {
       <div>
         <div class="h2" style="margin:0;font-size:20px">${escapeHtml(a.nome || 'Estudante')}</div>
         <div class="tiny" style="margin-top:6px">Último acesso ${fmtDate(a.ultimo_acesso)}</div>
-        <div style="margin-top:8px;font-size:14px">IP: <span class="ip">${escapeHtml(a.ultimo_ip || 'ainda sem IP — o aluno tem de abrir o site')}</span></div>
+        <div style="margin-top:8px;font-size:14px">IP: <span class="ip">${escapeHtml(a.ultimo_ip || 'ainda sem IP — o aluno tem de abrir o site')}</span>${a.sessoes > 1 ? ` · <span class="tiny">${a.sessoes} sessões no mesmo IP</span>` : ''}</div>
       </div>
       <div class="actions">
         <button class="btn ghost" id="dFavBtn" type="button">${a.favorito ? '★ Favorito' : '☆ Favoritar'}</button>

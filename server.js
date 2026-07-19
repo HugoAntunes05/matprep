@@ -103,6 +103,103 @@ async function enrichAlunosComIp(sb, list) {
   return out.map((a) => Object.assign(a, { ultimo_ip: a.ultimo_ip || map[a.user_id] || null }));
 }
 
+function temAtividade(a) {
+  if (!a) return false;
+  if (a.ultimo_acesso) return true;
+  const keys = [
+    'perguntas_vistas',
+    'perguntas_respondidas',
+    'segundos_estudo',
+    'segundos_video',
+    'licoes_abertas',
+    'licoes_concluidas',
+    'materiais_abertos',
+    'exames_feitos',
+  ];
+  return keys.some((k) => Number(a[k]) > 0);
+}
+
+/** Uma pessoa real = um IP (várias contas anónimas no mesmo IP juntam-se) */
+function agruparAlunosPorIp(list) {
+  const groups = new Map();
+  const SUM = [
+    'perguntas_vistas',
+    'perguntas_respondidas',
+    'perguntas_certas',
+    'segundos_video',
+    'segundos_estudo',
+    'licoes_abertas',
+    'licoes_concluidas',
+    'materiais_abertos',
+    'exames_feitos',
+  ];
+
+  for (const raw of list || []) {
+    if (!temAtividade(raw) && !raw.ultimo_ip) continue; // fantasma vazio
+    const a = Object.assign({}, raw);
+    const key = a.ultimo_ip ? 'ip:' + a.ultimo_ip : 'uid:' + a.user_id;
+    if (!groups.has(key)) {
+      groups.set(key, Object.assign({}, a, {
+        user_ids: [a.user_id],
+        sessoes: 1,
+        agrupado_por_ip: Boolean(a.ultimo_ip),
+      }));
+      continue;
+    }
+    const g = groups.get(key);
+    if (!g.user_ids.includes(a.user_id)) {
+      g.user_ids.push(a.user_id);
+      g.sessoes += 1;
+    }
+    for (const k of SUM) g[k] = (Number(g[k]) || 0) + (Number(a[k]) || 0);
+    if (a.favorito) g.favorito = true;
+    const ta = a.ultimo_acesso ? new Date(a.ultimo_acesso).getTime() : 0;
+    const tg = g.ultimo_acesso ? new Date(g.ultimo_acesso).getTime() : 0;
+    if (ta >= tg) {
+      g.user_id = a.user_id;
+      g.nome = a.nome || g.nome;
+      g.ultimo_acesso = a.ultimo_acesso || g.ultimo_acesso;
+      g.streak = a.streak || g.streak;
+    }
+  }
+
+  return Array.from(groups.values()).map((g) => {
+    const resp = Number(g.perguntas_respondidas) || 0;
+    const certas = Number(g.perguntas_certas) || 0;
+    g.precisao_pct = resp ? Math.round((100 * certas) / resp) : 0;
+    if (g.nome && String(g.nome).includes(' · ')) {
+      g.nome = String(g.nome).split(' · ')[0];
+    }
+    return g;
+  });
+}
+
+async function carregarAlunosAgrupados(sb) {
+  let data, error;
+  ({ data, error } = await sb.from('admin_alunos_resumo').select('*'));
+  if (error) {
+    const r = await sb.from('perfis').select('id, nome, created_at');
+    if (r.error) throw error;
+    data = (r.data || []).map((p) => ({
+      user_id: p.id,
+      nome: p.nome,
+      registado_em: p.created_at,
+      favorito: false,
+    }));
+  }
+  let list = await enrichAlunosComIp(sb, data || []);
+  list = agruparAlunosPorIp(list);
+  list.sort((a, b) => {
+    const fa = a.favorito ? 1 : 0;
+    const fb = b.favorito ? 1 : 0;
+    if (fa !== fb) return fb - fa;
+    const ta = a.ultimo_acesso ? new Date(a.ultimo_acesso).getTime() : 0;
+    const tb = b.ultimo_acesso ? new Date(b.ultimo_acesso).getTime() : 0;
+    return tb - ta;
+  });
+  return list;
+}
+
 async function userFromBearer(req) {
   const hdr = req.headers.authorization || '';
   const token = hdr.startsWith('Bearer ') ? hdr.slice(7) : '';
@@ -264,9 +361,7 @@ app.post('/api/admin/login', (req, res) => {
 app.get('/api/admin/overview', requireAdmin, async (_req, res) => {
   const sb = adminSb();
   try {
-    const { data: alunos, error } = await sb.from('admin_alunos_resumo').select('*');
-    if (error) throw error;
-    const list = alunos || [];
+    const list = await carregarAlunosAgrupados(sb);
     const now = Date.now();
     const ativosHoje = list.filter((a) => a.ultimo_acesso && now - new Date(a.ultimo_acesso).getTime() < 864e5).length;
     const sum = (k) => list.reduce((n, a) => n + (Number(a[k]) || 0), 0);
@@ -294,31 +389,7 @@ app.get('/api/admin/overview', requireAdmin, async (_req, res) => {
 app.get('/api/admin/alunos', requireAdmin, async (_req, res) => {
   const sb = adminSb();
   try {
-    let data, error;
-    ({ data, error } = await sb
-      .from('admin_alunos_resumo')
-      .select('*')
-      .order('ultimo_acesso', { ascending: false, nullsFirst: false }));
-    if (error) {
-      // fallback se a view nova ainda não existir
-      const r = await sb.from('perfis').select('id, nome, created_at');
-      if (r.error) throw error;
-      data = (r.data || []).map((p) => ({
-        user_id: p.id,
-        nome: p.nome,
-        registado_em: p.created_at,
-        favorito: false,
-      }));
-    }
-    let list = await enrichAlunosComIp(sb, data || []);
-    list = list.slice().sort((a, b) => {
-      const fa = a.favorito ? 1 : 0;
-      const fb = b.favorito ? 1 : 0;
-      if (fa !== fb) return fb - fa;
-      const ta = a.ultimo_acesso ? new Date(a.ultimo_acesso).getTime() : 0;
-      const tb = b.ultimo_acesso ? new Date(b.ultimo_acesso).getTime() : 0;
-      return tb - ta;
-    });
+    const list = await carregarAlunosAgrupados(sb);
     res.json({ alunos: list });
   } catch (e) {
     res.status(500).json({ error: e.message || String(e) });
@@ -384,22 +455,34 @@ app.post('/api/admin/alunos/:id/favorito', requireAdmin, async (req, res) => {
 app.get('/api/admin/alunos/:id', requireAdmin, async (req, res) => {
   const sb = adminSb();
   const id = req.params.id;
+  const ipQ = req.query.ip ? String(req.query.ip) : null;
   try {
+    const agrupados = await carregarAlunosAgrupados(sb);
+    const grupo =
+      agrupados.find((a) => a.user_id === id) ||
+      (ipQ && agrupados.find((a) => a.ultimo_ip === ipQ)) ||
+      null;
+    const ids = grupo && grupo.user_ids && grupo.user_ids.length ? grupo.user_ids : [id];
+
     const [resumo, videos, licoes, perguntas, eventos, progresso] = await Promise.all([
       sb.from('admin_alunos_resumo').select('*').eq('user_id', id).maybeSingle(),
-      sb.from('video_progresso').select('*').eq('user_id', id).order('updated_at', { ascending: false }),
-      sb.from('licao_progresso').select('*').eq('user_id', id).order('ultima_abertura', { ascending: false }),
-      sb.from('pergunta_vistas').select('*').eq('user_id', id).order('ultima_vista', { ascending: false }),
+      sb.from('video_progresso').select('*').in('user_id', ids).order('updated_at', { ascending: false }),
+      sb.from('licao_progresso').select('*').in('user_id', ids).order('ultima_abertura', { ascending: false }),
+      sb.from('pergunta_vistas').select('*').in('user_id', ids).order('ultima_vista', { ascending: false }),
       sb
         .from('atividade_eventos')
         .select('*')
-        .eq('user_id', id)
+        .in('user_id', ids)
         .order('created_at', { ascending: false })
-        .limit(300),
+        .limit(400),
       sb.from('progresso').select('*').eq('user_id', id).maybeSingle(),
     ]);
     if (resumo.error) throw resumo.error;
-    const aluno = resumo.data ? Object.assign({}, resumo.data) : null;
+    let aluno = grupo
+      ? Object.assign({}, grupo)
+      : resumo.data
+        ? Object.assign({}, resumo.data)
+        : null;
     if (aluno && !aluno.ultimo_ip) {
       const enriched = await enrichAlunosComIp(sb, [aluno]);
       aluno.ultimo_ip = enriched[0] && enriched[0].ultimo_ip;
@@ -414,6 +497,7 @@ app.get('/api/admin/alunos/:id', requireAdmin, async (req, res) => {
       perguntas: perguntas.data || [],
       eventos: eventosLimpos,
       progresso: progresso.data || null,
+      user_ids: ids,
       errors: {
         videos: videos.error?.message,
         licoes: licoes.error?.message,
