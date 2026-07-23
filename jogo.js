@@ -59,12 +59,9 @@ export function indiceBoss(bossId){
   return BOSSES.findIndex(b=>b.id===bossId);
 }
 
-/** Só podes enfrentar um boss se o anterior estiver derrotado */
+/** Todos os bosses liberados (bloqueio sequencial desativado) */
 export function bossLiberado(bossId, bossesMortos){
-  const i=indiceBoss(bossId);
-  if(i<0)return false;
-  if(i===0)return true;
-  return (bossesMortos||[]).includes(BOSSES[i-1].id);
+  return true;
 }
 
 export function bossAnterior(bossId){

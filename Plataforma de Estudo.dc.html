@@ -1335,11 +1335,7 @@ class Component extends DCLogic {
     const J=this.J; if(!J)return;
     const boss=J.bossPorId(bossId); if(!boss)return;
     const g=this.game();
-    if(J.bossLiberado&&!J.bossLiberado(boss.id,g.bossesMortos||[])){
-      const ant=J.bossAnterior(boss.id);
-      this.avisar(ant?'Derrota primeiro: '+ant.nome:'Boss bloqueado');
-      return;
-    }
+    // bloqueio sequencial desativado — qualquer boss é jogável
     const maxHp=J.maxHpDeNivel(g.nivel);
     const combate={bossId:boss.id,bossHp:boss.hp,bossMax:boss.hp,usouAjuda:false,escudo:false,foco:false,fase:'ativo',log:(J.pickFrase&&J.pickFrase('idle'))||'Hora de farmar aura — acerta e dá hit!'};
     this.mut(st=>{
